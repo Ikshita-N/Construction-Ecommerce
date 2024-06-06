@@ -64,7 +64,7 @@ const AddressScreen = () => {
         const token = await AsyncStorage.getItem("authToken");
     console.log(address, token)
     axios
-      .post("http://10.200.33.172:8000/addresses", { token, address })
+      .post("http://192.168.0.164:8000/addresses", { token, address })
       .then((response) => {
         Alert.alert("Success", "Addresses added successfully");
         setName("");

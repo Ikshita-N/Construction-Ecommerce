@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 const jwt = require("jsonwebtoken");
-app.listen(port, "10.200.33.172", () => {
+app.listen(port, "192.168.0.164", () => {
   console.log("Server is running on port 8000");
 });
 
@@ -48,7 +48,7 @@ const sendVerificationEmail = async (email, verificationToken) => {
     from: "ikshita.nukavarapu@gmail.com",
     to: email,
     subject: "Email Verification..Test email",
-    text: `Please click the following link to verify your email: http://10.200.33.172:8000/verify/${verificationToken}`,
+    text: `Please click the following link to verify your email: http://192.168.0.164:8000/verify/${verificationToken}`,
   };
 
   // Send the email

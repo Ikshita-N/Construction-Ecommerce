@@ -28,7 +28,7 @@ const AddAddressScreen = () => {
       const token = await AsyncStorage.getItem("authToken");
 
       const response = await axios.get(
-        `http://10.200.33.172:8000/addresses/${token}`
+        `http://192.168.0.164:8000/addresses/${token}`
       );
       const { addresses } = response.data;
       // console.log(addresses);

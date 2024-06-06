@@ -30,7 +30,7 @@ import {
       console.log(user);
       // send a POST  request to the backend API to register the user
       axios
-        .post("http://10.200.33.172:8000/register", user)
+        .post("http://192.168.0.164:8000/register", user)
         .then((response) => {
           console.log(response);
           Alert.alert(
