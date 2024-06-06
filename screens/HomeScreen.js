@@ -9,6 +9,7 @@ import {
   Pressable,
   TextInput,
 } from "react-native";
+import Products from "../data";
 import React, { useEffect, useState, useCallback, useContext } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
@@ -23,6 +24,8 @@ import { useSelector } from "react-redux";
 import { BottomModal, ModalContent, SlideAnimation } from "react-native-modals";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { UserType } from "../UserContext";
+import ProductComponent from "../components/ProductComponent";
+import Categories from "../categories";
 
 //import { SliderBox } from "react-native-image-slider-box";
 // import Carousel, { Pagination } from 'react-native-snap-carousel';
@@ -31,45 +34,47 @@ const HomeScreen = () => {
   const list = [
     {
       id: "0",
-      image: "https://m.media-amazon.com/images/I/714rkFrqqXL._SX450_.jpg",
+      images: ["https://m.media-amazon.com/images/I/714rkFrqqXL._SX450_.jpg"],
       name: "Drills",
     },
     {
       id: "1",
-      image:
+      images: [
         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKS2m60i8MP1TW1jFSscKzFIXPMISaxt6g8g&s",
+      ],
       name: "Panels",
     },
     {
       id: "3",
-      image:
+      images: [
         "https://cpimg.tistatic.com/05198619/b/4/Black-HDPE-Water-Pipe.jpg",
+      ],
       name: "Pipes",
     },
     {
       id: "4",
-      image:
+      images: [
         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSx-IWm6NPWKgErHHczPgyjAHpQrnqWEnCVPg&s",
+      ],
       name: "Sheets",
     },
     {
       id: "5",
-      image:
+      images: [
         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR11nYPMIPm-U8Ry8wVDPgnWHcPCM1DGMou6w&s",
+      ],
       name: "Rods",
     },
     {
       id: "6",
-      image:
+      images: [
         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDYJZB8MWseh2poK_gv2g3fak3mw_GAvOc7Q&s",
+      ],
       name: "Paints",
     },
   ];
-  const images = [
-    "https://img.etimg.com/thumb/msid-93051525,width-1070,height-580,imgsize-2243475,overlay-economictimes/photo.jpg",
-    "https://images-eu.ssl-images-amazon.com/images/G/31/img22/Wireless/devjyoti/PD23/Launches/Updated_ingress1242x550_3.gif",
-    "https://images-eu.ssl-images-amazon.com/images/G/31/img23/Books/BB/JULY/1242x550_Header-BB-Jul23.jpg",
-  ];
+  
+
   const deals = [
     {
       id: "20",
@@ -78,7 +83,7 @@ const HomeScreen = () => {
       price: 19000,
       image:
         "https://images-eu.ssl-images-amazon.com/images/G/31/wireless_products/ssserene/weblab_wf/xcm_banners_2022_in_bau_wireless_dec_580x800_once3l_v2_580x800_in-en.jpg",
-      carouselImages: [
+      images: [
         "https://m.media-amazon.com/images/I/61QRgOgBx0L._SX679_.jpg",
         "https://m.media-amazon.com/images/I/61uaJPLIdML._SX679_.jpg",
         "https://m.media-amazon.com/images/I/510YZx4v3wL._SX679_.jpg",
@@ -95,7 +100,7 @@ const HomeScreen = () => {
       price: 26000,
       image:
         "https://images-eu.ssl-images-amazon.com/images/G/31/img23/Wireless/Samsung/SamsungBAU/S20FE/GW/June23/BAU-27thJune/xcm_banners_2022_in_bau_wireless_dec_s20fe-rv51_580x800_in-en.jpg",
-      carouselImages: [
+      images: [
         "https://m.media-amazon.com/images/I/81vDZyJQ-4L._SY879_.jpg",
         "https://m.media-amazon.com/images/I/61vN1isnThL._SX679_.jpg",
         "https://m.media-amazon.com/images/I/71yzyH-ohgL._SX679_.jpg",
@@ -112,7 +117,7 @@ const HomeScreen = () => {
       price: 14000,
       image:
         "https://images-eu.ssl-images-amazon.com/images/G/31/img23/Wireless/Samsung/CatPage/Tiles/June/xcm_banners_m14_5g_rv1_580x800_in-en.jpg",
-      carouselImages: [
+      images: [
         "https://m.media-amazon.com/images/I/817WWpaFo1L._SX679_.jpg",
         "https://m.media-amazon.com/images/I/81KkF-GngHL._SX679_.jpg",
         "https://m.media-amazon.com/images/I/61IrdBaOhbL._SX679_.jpg",
@@ -128,77 +133,14 @@ const HomeScreen = () => {
       price: 10999,
       image:
         "https://images-eu.ssl-images-amazon.com/images/G/31/tiyesum/N55/June/xcm_banners_2022_in_bau_wireless_dec_580x800_v1-n55-marchv2-mayv3-v4_580x800_in-en.jpg",
-      carouselImages: [
+      images: [
         "https://m.media-amazon.com/images/I/41Iyj5moShL._SX300_SY300_QL70_FMwebp_.jpg",
         "https://m.media-amazon.com/images/I/61og60CnGlL._SX679_.jpg",
         "https://m.media-amazon.com/images/I/61twx1OjYdL._SX679_.jpg",
       ],
     },
   ];
-  const offers = [
-    {
-      id: "0",
-      title: "Impact Wrench",
-      offer: "72%",
-      oldPrice: 249.99,
-      price: 139,
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0gmkYQSe1yQs1HJkON252WeezpC7ZudWbmw&s",
-      carouselImages: [
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0gmkYQSe1yQs1HJkON252WeezpC7ZudWbmw&s",
-        "https://jpttools.com/cdn/shop/files/11_5b0106f5-216e-44a6-92dd-c708b28814f2_1024x1024.jpg?v=1706955360",
-        "https://jpttools.com/cdn/shop/files/8_257555a3-b4b0-44da-9890-a74ea64e39e5_1024x1024.jpg?v=1707209334",
-      ],
-      color: "Red",
-      size: "Normal",
-    },
-    {
-      id: "1",
-      title: "LED Bulb",
-      offer: "40%",
-      oldPrice: 60,
-      price: 36,
-      image: "https://m.media-amazon.com/images/I/61JiHMN4fkL.jpg",
-      carouselImages: [
-        "https://m.media-amazon.com/images/I/61JiHMN4fkL.jpg",
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-obog8GQ9c71-Q2qNzFeL6d9vwEqPEU6Spg&s",
-      ],
-
-      color: "black",
-      size: "Normal",
-    },
-    {
-      id: "2",
-      title: "Electric Drill Machine 13mm",
-      offer: "40%",
-      oldPrice: 7955,
-      price: 3495,
-      image: "https://m.media-amazon.com/images/I/714rkFrqqXL._SX450_.jpg",
-      carouselImages: [
-        "https://m.media-amazon.com/images/I/714rkFrqqXL._SX450_.jpg",
-        "https://m.media-amazon.com/images/I/71O-Gj7PtcL._SX450_.jpg",
-        "https://m.media-amazon.com/images/I/71pCGvmTlEL._SX450_.jpg",
-        "https://m.media-amazon.com/images/I/7136JDmoAkL._SX450_.jpg",
-        "https://m.media-amazon.com/images/I/71DLNcxs0jL._SY741_.jpg",
-      ],
-      color: "red",
-      size: "Normal",
-    },
-    {
-      id: "3",
-      title:
-        "Smart Electric Painting Equipment, For Industrial Use",
-      offer: "40%",
-      oldPrice: 2499,
-      price: 1999,
-      image: "https://3.imimg.com/data3/KQ/WB/MY-2617820/electric-painting-equipment-500x500.jpg",
-      carouselImages: [
-        "https://3.imimg.com/data3/KQ/WB/MY-2617820/electric-painting-equipment-500x500.jpg" ],
-      color: "Norway Blue",
-      size: "8GB RAM, 128GB Storage",
-    },
-  ];
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState([])
   const navigation = useNavigation();
   const [open, setOpen] = useState(false);
   const [addresses, setAddresses] = useState([]);
@@ -328,7 +270,7 @@ const HomeScreen = () => {
               >
                 <Image
                   style={{ width: 50, height: 50, resizeMode: "contain" }}
-                  source={{ uri: item.image }}
+                  source={{ uri: item.images[0] }}
                 />
                 <Text
                   style={{
@@ -400,7 +342,7 @@ const HomeScreen = () => {
                     id: item.id,
                     title: item.title,
                     price: item?.price,
-                    carouselImages: item.carouselImages,
+                    images: item.images,
                     color: item?.color,
                     size: item?.size,
                     oldPrice: item?.oldPrice,
@@ -429,6 +371,9 @@ const HomeScreen = () => {
               marginTop: 15,
             }}
           />
+          <ScrollView>
+      {Categories.map((category, index) => (
+        <View key={index}>
           <Text
             style={{
               padding: 10,
@@ -436,66 +381,20 @@ const HomeScreen = () => {
               fontWeight: "bold",
             }}
           >
-            Today's Deals
+            {category}
           </Text>
-
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {offers.map((item, index) => (
-              <Pressable
-                key={item.id}
-                onPress={() =>
-                  navigation.navigate("Info", {
-                    id: item.id,
-                    title: item.title,
-                    price: item?.price,
-                    carouselImages: item.carouselImages,
-                    color: item?.color,
-                    size: item?.size,
-                    oldPrice: item?.oldPrice,
-                    item: item,
-                  })
-                }
-                style={{
-                  marginVertical: 10,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Image
-                  style={{
-                    width: 150,
-                    height: 150,
-                    resizeMode: "contain",
-                  }}
-                  source={{ uri: item?.image }}
-                />
-
-                <View
-                  style={{
-                    backgroundColor: "#E31837",
-                    paddingVertical: 5,
-                    width: 130,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    marginTop: 10,
-                    borderRadius: 4,
-                  }}
-                >
-                  <Text
-                    style={{
-                      textAlign: "center",
-                      color: "white",
-                      fontSize: 13,
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Upto {item?.offer} Off
-                  </Text>
-                </View>
-              </Pressable>
+            {Products.filter((product) => product.category === Categories[index]).map((product) => (
+              <ProductComponent
+                key={product.id}
+                navigation={navigation}
+                product={product}
+              />
             ))}
           </ScrollView>
-
+        </View>
+      ))}
+    </ScrollView>
           <Text
             style={{
               height: 1,

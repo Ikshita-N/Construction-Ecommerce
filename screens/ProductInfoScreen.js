@@ -74,7 +74,7 @@ console.log(cart);
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {route.params.carouselImages.map((item, index) => (
+        {route.params.images.map((item, index) => (
           <ImageBackground
             style={{
               width,
