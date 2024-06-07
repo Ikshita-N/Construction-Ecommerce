@@ -15,12 +15,15 @@ import {
   import { Ionicons } from "@expo/vector-icons";
   import { useNavigation } from "@react-navigation/native";
   import axios from "axios";
+  import { getIpAddress } from '../IpAddressUtils';
+
   
   const RegisterScreen = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [name, setName] = useState("");
     const navigation = useNavigation();
+    const ipAddress = getIpAddress(); // Get the IP address
     const handleRegister = async () => {
       const user = {
         name: name,
@@ -30,7 +33,7 @@ import {
       console.log(user);
       // send a POST  request to the backend API to register the user
       axios
-        .post("http://192.168.0.164:8000/register", user)
+        .post("http://${ipAddress}:8000/register", user)
         .then((response) => {
           console.log(response);
           Alert.alert(

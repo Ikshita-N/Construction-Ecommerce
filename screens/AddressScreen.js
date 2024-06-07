@@ -15,6 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { UserType } from "../UserContext";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
+import { getIpAddress } from '../IpAddressUtils';
 
 const AddressScreen = () => {
   const navigation = useNavigation();
@@ -24,6 +25,7 @@ const AddressScreen = () => {
   const [street, setStreet] = useState("");
   const [landmark, setLandmark] = useState("");
   const [postalCode, setPostalCode] = useState("");
+  const ipAddress = getIpAddress(); // Get the IP address
   const { userId, setUserId } = useContext(UserType);
   // useEffect(() => {
   //   const fetchUser = async () => {
@@ -64,7 +66,7 @@ const AddressScreen = () => {
         const token = await AsyncStorage.getItem("authToken");
     console.log(address, token)
     axios
-      .post("http://192.168.0.164:8000/addresses", { token, address })
+      .post(`http://${ipAddress}:8000/addresses`, { token, address })
       .then((response) => {
         Alert.alert("Success", "Addresses added successfully");
         setName("");

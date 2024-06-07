@@ -14,11 +14,14 @@ import {
   import { useNavigation } from "@react-navigation/native";
   import axios from "axios";
   import AsyncStorage from "@react-native-async-storage/async-storage";
+  import { getIpAddress } from '../IpAddressUtils';
+
   
   const LoginScreen = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigation = useNavigation();
+    const ipAddress = getIpAddress(); // Get the IP address
     useEffect(() => {
       const checkLoginStatus = async () => {
         try {
@@ -39,7 +42,7 @@ import {
         password: password,
       };
       axios
-        .post("http://192.168.0.164:8000/login", user)
+        .post("http://${ipAddress}:8000/login", user)
         .then((response) => {
           console.log(response);
           const token = response.data.token;

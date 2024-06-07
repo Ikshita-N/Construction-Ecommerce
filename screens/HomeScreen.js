@@ -27,6 +27,9 @@ import { UserType } from "../UserContext";
 import ProductComponent from "../components/ProductComponent";
 import Categories from "../categories";
 import CarouselHome from "../components/caruosel/Caruosel";
+import { getIpAddress } from "../IpAddressUtils";
+import SlideRecommender from "../components/sliderecommender/SlideRecommender";
+import Header from "../components/header";
 
 const HomeScreen = () => {
   const list = [
@@ -71,7 +74,6 @@ const HomeScreen = () => {
       name: "Paints",
     },
   ];
-
   // const deals = [
   //   {
   //     id: "20",
@@ -143,6 +145,7 @@ const HomeScreen = () => {
   const [addresses, setAddresses] = useState([]);
   const [category, setCategory] = useState("jewelery");
   const { userId, setUserId } = useContext(UserType);
+  const ipAddress = getIpAddress(); // Get the IP address
   const [items, setItems] = useState([
     { label: "Men's clothing", value: "men's clothing" },
     { label: "jewelery", value: "jewelery" },
@@ -174,7 +177,7 @@ const HomeScreen = () => {
   const fetchAddresses = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.0.164:8000/addresses/${userId}`
+        `http://${ipAddress}:8000/addresses/${userId}`
       );
       const { addresses } = response.data;
 
@@ -204,86 +207,9 @@ const HomeScreen = () => {
         }}
       >
         <ScrollView>
-          <View
-            style={{
-              backgroundColor: "#FFAD33",
-              padding: 10,
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <Pressable
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginHorizontal: 7,
-                gap: 10,
-                backgroundColor: "white",
-                borderRadius: 3,
-                height: 38,
-                flex: 1,
-              }}
-            >
-              <AntDesign
-                style={{ paddingLeft: 10 }}
-                name="search1"
-                size={22}
-                color="black"
-              />
-              <TextInput placeholder="Search for products" />
-            </Pressable>
-            <Feather name="mic" size={24} color="black" />
-          </View>
-
-          <Pressable
-            onPress={() => setModalVisible(!modalVisible)}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 5,
-              padding: 10,
-              backgroundColor: "#FAC369",
-            }}
-          >
-            <Ionicons name="location-outline" size={24} color="black" />
-            <Pressable>
-              <Text style={{ fontSize: 13, fontWeight: 500 }}>
-                Deliver to Ikshita - Dharwad 580007
-              </Text>
-            </Pressable>
-
-            <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
-          </Pressable>
-
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {list.map((item, index) => (
-              <Pressable
-                key={item.id}
-                style={{
-                  margin: 10,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Image
-                  style={{ width: 50, height: 50, resizeMode: "contain" }}
-                  source={{ uri: item.images[0] }}
-                />
-                <Text
-                  style={{
-                    textAlign: "center",
-                    fontSize: 12,
-                    fontWeight: 500,
-                    marginTop: 5,
-                    
-                  }}
-                >
-                  {item?.name}
-                </Text>
-              </Pressable>
-            ))}
-          </ScrollView>
-          <CarouselHome/>
+          <Header />
+          <SlideRecommender list={list} />
+          <CarouselHome />
 
           {/* <Text
             style={{
@@ -344,7 +270,7 @@ const HomeScreen = () => {
               <View key={index}>
                 <Text
                   style={{
-                    padding: 10,
+                    padding: 7,
                     fontSize: 18,
                     fontWeight: "bold",
                   }}

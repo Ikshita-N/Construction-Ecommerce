@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { View, ScrollView, Image, Dimensions, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -25,8 +25,18 @@ const CarouselHome = () => {
     scrollViewRef.current.scrollTo({ x: screenWidth * index, animated: true });
   };
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const nextIndex = (currentIndex + 1) % images.length;
+      scrollViewRef.current.scrollTo({ x: screenWidth * nextIndex, animated: true });
+      setCurrentIndex(nextIndex);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [currentIndex]);
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container]}>
       <ScrollView
         ref={scrollViewRef}
         horizontal
@@ -39,19 +49,6 @@ const CarouselHome = () => {
           <TouchableOpacity key={index} onPress={() => handleDotPress(index)}>
             <View style={styles.imageContainer}>
               <Image source={image} style={styles.image} />
-              {index === currentIndex && (
-                <View style={styles.dotsContainer}>
-                  {images.map((_, dotIndex) => (
-                    <View
-                      key={dotIndex}
-                      style={[
-                        styles.dot,
-                        { backgroundColor: dotIndex === currentIndex ? '#FF5722' : '#CCCCCC' },
-                      ]}
-                    />
-                  ))}
-                </View>
-              )}
             </View>
           </TouchableOpacity>
         ))}
@@ -71,20 +68,6 @@ const styles = StyleSheet.create({
   image: {
     width: screenWidth,
     resizeMode: 'contain',
-  },
-  dotsContainer: {
-    flexDirection: 'row',
-    position: 'absolute',
-    bottom: 10,
-    left: 0,
-    right: 0,
-    justifyContent: 'center',
-  },
-  dot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginHorizontal: 5,
   },
 });
 

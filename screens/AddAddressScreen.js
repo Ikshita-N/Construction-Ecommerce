@@ -14,10 +14,12 @@ import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
 import { UserType } from "../UserContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getIpAddress } from '../IpAddressUtils';
 
 const AddAddressScreen = () => {
   const navigation = useNavigation();
   const [addresses, setAddresses] = useState([]);
+  const ipAddress = getIpAddress(); // Get the IP address
   const { userId, setUserId } = useContext(UserType);
   //console.log("userId:", userId);
   useFocusEffect(() => {
@@ -28,7 +30,7 @@ const AddAddressScreen = () => {
       const token = await AsyncStorage.getItem("authToken");
 
       const response = await axios.get(
-        `http://192.168.0.164:8000/addresses/${token}`
+        `http://${ipAddress}:8000/addresses/${token}`
       );
       const { addresses } = response.data;
       // console.log(addresses);

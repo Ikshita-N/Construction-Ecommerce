@@ -11,9 +11,10 @@ app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+const { getIpAddress } = require('../IpAddressUtils');
 
 const jwt = require("jsonwebtoken");
-app.listen(port, "192.168.0.164", () => {
+app.listen(port, getIpAddress, () => {
   console.log("Server is running on port 8000");
 });
 
@@ -48,7 +49,7 @@ const sendVerificationEmail = async (email, verificationToken) => {
     from: "ikshita.nukavarapu@gmail.com",
     to: email,
     subject: "Email Verification..Test email",
-    text: `Please click the following link to verify your email: http://192.168.0.164:8000/verify/${verificationToken}`,
+    text: `Please click the following link to verify your email: http://${getIpAddress}:8000/verify/${verificationToken}`,
   };
 
   // Send the email
