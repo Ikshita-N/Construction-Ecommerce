@@ -16,9 +16,9 @@ import { UserType } from "../UserContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getIpAddress } from '../IpAddressUtils';
 
-  useEffect(() => {
-    fetchAddresses();
-  }, [userId, modalVisible]);
+  // useEffect(() => {
+  //   fetchAddresses();
+  // }, [userId, modalVisible]);
 const AddAddressScreen = () => {
   const navigation = useNavigation();
   const [addresses, setAddresses] = useState([]);
