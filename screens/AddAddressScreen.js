@@ -16,18 +16,17 @@ import { UserType } from "../UserContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getIpAddress } from '../IpAddressUtils';
 
-  // useEffect(() => {
-  //   fetchAddresses();
-  // }, [userId, modalVisible]);
 const AddAddressScreen = () => {
   const navigation = useNavigation();
   const [addresses, setAddresses] = useState([]);
+  const [defaultAddressId, setDefaultAddressId] = useState(null); // Add this line
   const ipAddress = getIpAddress(); // Get the IP address
   const { userId, setUserId } = useContext(UserType);
-  //console.log("userId:", userId);
+
   useFocusEffect(() => {
     fetchAddresses();
   });
+
   const fetchAddresses = async () => {
     try {
       const token = await AsyncStorage.getItem("authToken");
@@ -36,16 +35,28 @@ const AddAddressScreen = () => {
         `http://${ipAddress}:8000/addresses/${token}`
       );
       const { addresses } = response.data;
-      // console.log(addresses);
       setAddresses(addresses);
     } catch (error) {
       console.log("error", error);
     }
   };
-//  console.log("addresses", addresses);
-  // const addAddressfunction = (address) => {
-  //   setAddresses(prevaddresses => [...prevaddresses, address])
-  // }
+
+  const handleSetDefaultAddress = async (addressId) => {
+    try {
+      const token = await AsyncStorage.getItem("authToken");
+
+      await axios.post(`http://${ipAddress}:8000/addresses/set-default`, {
+        token,
+        addressId,
+      });
+
+      setDefaultAddressId(addressId); // Update the default address ID in state
+      console.log(addressId)
+    } catch (error) {
+      console.log("error setting default address", error);
+    }
+  };
+
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={{ marginTop: 50 }}>
       <View
@@ -104,6 +115,7 @@ const AddAddressScreen = () => {
           {/* all the added addresses */}
           {addresses?.map((item, index) => (
             <Pressable
+              key={index} // Add key prop here
               style={{
                 borderWidth: 1,
                 borderColor: "#D0D0D0",
@@ -206,8 +218,9 @@ const AddAddressScreen = () => {
                 </Pressable>
 
                 <Pressable
+                  onPress={() => handleSetDefaultAddress(item._id)} // Call the handler here
                   style={{
-                    backgroundColor: "#F5F5F5",
+                    backgroundColor: defaultAddressId === item._id ? "#FFD700" : "#F5F5F5",
                     paddingHorizontal: 10,
                     paddingVertical: 6,
                     borderRadius: 5,
@@ -215,7 +228,7 @@ const AddAddressScreen = () => {
                     borderColor: "#D0D0D0",
                   }}
                 >
-                  <Text>Set as Default</Text>
+                  <Text>{defaultAddressId === item._id ? "Default" : "Set as Default"}</Text>
                 </Pressable>
               </View>
             </Pressable>

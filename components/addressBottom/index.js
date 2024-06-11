@@ -1,12 +1,42 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react'
-import { BottomModal, ModalContent, SlideAnimation } from 'react-native-modals';
-import { AntDesign, Entypo, Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-
-const  AddressBottom= ({modalVisible, setModalVisible}) => {
+import React, { useState, useEffect } from "react";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { BottomModal, ModalContent, SlideAnimation } from "react-native-modals";
+import { AntDesign, Entypo, Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getIpAddress } from "../../IpAddressUtils";
+const AddressBottom = ({ modalVisible, setModalVisible }) => {
   const [addresses, setAddresses] = useState([]);
+  const [defaultAddress, setDefaultAddress] = useState(null);
+  const [selectedAddress, setSelectedAddress] = useState(null);
   const navigation = useNavigation();
+  const ipAddress = getIpAddress();
+
+  useEffect(() => {
+    fetchAddresses();
+  }, []);
+
+  const fetchAddresses = async () => {
+    try {
+      const token = await AsyncStorage.getItem("authToken");
+      const response = await axios.get(
+        `http://${ipAddress}:8000/addresses/${token}`
+      );
+
+      const { addresses, defaultAddress } = response.data;
+      console.log(defaultAddress)
+      console.log("1")
+      setAddresses(addresses || []);
+      setDefaultAddress(defaultAddress || null);
+    } catch (error) {
+      console.log("Error fetching addresses", error);
+    }
+  };
+
+  const handleAddressPress = (address) => {
+    setSelectedAddress(address._id);
+  };
 
   return (
     <View>
@@ -21,7 +51,7 @@ const  AddressBottom= ({modalVisible, setModalVisible}) => {
         }
         onHardwareBackPress={() => setModalVisible(!modalVisible)}
         visible={modalVisible}
-        onTouchOutside={() => setModalVisible(false)} // Corrected typo here
+        onTouchOutside={() => setModalVisible(false)}
       >
         <ModalContent
           style={{
@@ -45,55 +75,53 @@ const  AddressBottom= ({modalVisible, setModalVisible}) => {
             </Text>
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {/* alredy added addresses */}
-            {addresses?.map((item, index) => (
+            {/* Display default address */}
+            {defaultAddress && (
               <Pressable
-                onPress={() => setSelectedAdress(item)}
+                key={defaultAddress._id}
+                onPress={() => handleAddressPress(defaultAddress)}
                 style={{
                   width: 140,
                   height: 140,
-                  borderColor: "#D0D0D0",
-                  borderWidth: 1,
+                  borderColor: selectedAddress === defaultAddress._id ? "red" : "green",
+                  borderWidth: 2,
                   padding: 10,
                   justifyContent: "center",
                   alignItems: "center",
-                  gap: 3,
                   marginRight: 15,
                   marginTop: 10,
-                  backgroundColor:
-                    selectedAddress === item ? "#FBCEB1" : "white",
+                  backgroundColor: "#FBCEB1",
                 }}
               >
-                <View
-                  style={{ flexDirection: "row", alignItems: "center", gap: 3 }}
-                >
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <Text style={{ fontSize: 13, fontWeight: "bold" }}>
-                    {item?.name}
+                    {defaultAddress.name}
                   </Text>
-                  <Entypo name="location-pin" size={24} color="red" />
+                  <Entypo name="location-pin" size={22} color="red" />
                 </View>
 
                 <Text
                   numberOfLines={1}
                   style={{ width: 130, fontSize: 13, textAlign: "center" }}
                 >
-                  {item?.houseNo},{item?.landmark}
-                </Text>
-
-                <Text
-                  numberOfLines={1}
-                  style={{ width: 130, fontSize: 13, textAlign: "center" }}
-                >
-                  {item?.street}
+                  {defaultAddress.landmark}, {defaultAddress.houseNo}
                 </Text>
                 <Text
                   numberOfLines={1}
                   style={{ width: 130, fontSize: 13, textAlign: "center" }}
                 >
-                  India, Bangalore
+                  {defaultAddress.street}
                 </Text>
+                <Text
+                  numberOfLines={1}
+                  style={{ width: 130, fontSize: 13, textAlign: "center" }}
+                >
+                  <Text>India,</Text> {defaultAddress.postalCode}
+                </Text>
+                <Text style={{ color: "green", fontSize: 12 }}>Default</Text>
               </Pressable>
-            ))}
+            )}
+            {/* Add Address option */}
             <Pressable
               onPress={() => {
                 setModalVisible(false);
@@ -113,11 +141,10 @@ const  AddressBottom= ({modalVisible, setModalVisible}) => {
                 style={{
                   textAlign: "center",
                   color: "#0066B2",
-                  fontWeight: 500,
+                  fontWeight: "500",
                 }}
               >
-                {" "}
-                Add an Address or pick-up point{" "}
+                Add an Address or pick-up point
               </Text>
             </Pressable>
           </ScrollView>
@@ -137,7 +164,7 @@ const  AddressBottom= ({modalVisible, setModalVisible}) => {
             >
               <Ionicons name="locate-sharp" size={22} color="#0066b2" />
               <Text style={{ color: "#0066b2", fontWeight: "400" }}>
-                Use My Currect location
+                Use My Current location
               </Text>
             </View>
 
@@ -154,9 +181,7 @@ const  AddressBottom= ({modalVisible, setModalVisible}) => {
         </ModalContent>
       </BottomModal>
     </View>
-  )
-}
+  );
+};
 
-export default AddressBottom
-
-const styles = StyleSheet.create({})
+export default AddressBottom;

@@ -54,7 +54,6 @@ const AddressScreen = () => {
   // }, [setUserId]);
   // console.log("UserId:", userId);
   const handleAddAddress = async () => {
-    //console.log('dddd')
     const address = {
       name,
       mobileNo,
@@ -153,7 +152,7 @@ const AddressScreen = () => {
 
         <View>
           <Text style={{ fontSize: 15, fontWeight: "bold" }}>
-            Mobile numebr
+            Mobile Number
           </Text>
 
           <TextInput

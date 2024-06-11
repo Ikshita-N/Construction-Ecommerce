@@ -34,6 +34,10 @@ const userSchema = new mongoose.Schema({
     ],
     default: [],
   },
+  defaultAddress: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Address', // Refers to the Address schema, if it's defined separately
+  },
   orders: {
     type: [
       {
