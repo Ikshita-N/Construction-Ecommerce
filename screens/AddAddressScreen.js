@@ -19,13 +19,15 @@ import { getIpAddress } from '../IpAddressUtils';
 const AddAddressScreen = () => {
   const navigation = useNavigation();
   const [addresses, setAddresses] = useState([]);
-  const [defaultAddressId, setDefaultAddressId] = useState(null); // Add this line
-  const ipAddress = getIpAddress(); // Get the IP address
+  const [defaultAddress, setDefaultAddress] = useState(null);
+  const ipAddress = getIpAddress(); 
   const { userId, setUserId } = useContext(UserType);
 
-  useFocusEffect(() => {
-    fetchAddresses();
-  });
+  useFocusEffect(
+    useCallback(() => {
+      fetchAddresses();
+    }, [])
+  );
 
   const fetchAddresses = async () => {
     try {
@@ -34,8 +36,9 @@ const AddAddressScreen = () => {
       const response = await axios.get(
         `http://${ipAddress}:8000/addresses/${token}`
       );
-      const { addresses } = response.data;
+      const { addresses, defaultAddressId } = response.data; 
       setAddresses(addresses);
+      setDefaultAddress(defaultAddressId); 
     } catch (error) {
       console.log("error", error);
     }
@@ -50,8 +53,7 @@ const AddAddressScreen = () => {
         addressId,
       });
 
-      setDefaultAddressId(addressId); // Update the default address ID in state
-      console.log(addressId)
+      setDefaultAddress(addressId); 
     } catch (error) {
       console.log("error setting default address", error);
     }
@@ -218,9 +220,9 @@ const AddAddressScreen = () => {
                 </Pressable>
 
                 <Pressable
-                  onPress={() => handleSetDefaultAddress(item._id)} // Call the handler here
+                  onPress={() => handleSetDefaultAddress(item._id)} 
                   style={{
-                    backgroundColor: defaultAddressId === item._id ? "#FFD700" : "#F5F5F5",
+                    backgroundColor: defaultAddress === item._id ? "#FFD700" : "#F5F5F5",
                     paddingHorizontal: 10,
                     paddingVertical: 6,
                     borderRadius: 5,
@@ -228,7 +230,7 @@ const AddAddressScreen = () => {
                     borderColor: "#D0D0D0",
                   }}
                 >
-                  <Text>{defaultAddressId === item._id ? "Default" : "Set as Default"}</Text>
+                  <Text>{defaultAddress === item._id ? "Default" : "Set as Default"}</Text>
                 </Pressable>
               </View>
             </Pressable>

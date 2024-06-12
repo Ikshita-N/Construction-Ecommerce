@@ -2,7 +2,7 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { AntDesign, Feather, Ionicons, MaterialIcons } from '@expo/vector-icons';
 
-const Header = ({ setModalVisible, modalVisible }) => {
+const Header = ({ setModalVisible, modalVisible, defaultAddress }) => {
   return (
     <View>
       <View
@@ -48,15 +48,21 @@ const Header = ({ setModalVisible, modalVisible }) => {
       >
         <Ionicons name="location-outline" size={24} color="black" />
         <Pressable>
-          <Text style={{ fontSize: 13, fontWeight: 500 }}>
-            Deliver to Ikshita - Dharwad 580007
-          </Text>
+          {defaultAddress ? (
+            <Text>
+              Deliver to {defaultAddress?.name} - {defaultAddress?.street}
+            </Text>
+          ) : (
+            <Text style={{ fontSize: 13, fontWeight: "500" }}>
+              Add an Address
+            </Text>
+          )}
         </Pressable>
-
         <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
-      </Pressable>    
+      </Pressable>
     </View>
   );
 }
+
 
 export default Header;

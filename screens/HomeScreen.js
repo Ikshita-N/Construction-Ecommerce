@@ -74,24 +74,20 @@ const HomeScreen = () => {
   const [category, setCategory] = useState("jewelery");
   const { userId, setUserId } = useContext(UserType);
   const ipAddress = getIpAddress();
+  const [addresses, setAddresses] = useState([]);
+  const [defaultAddress, setDefaultAddress] = useState(null);
 
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await axios.get("https://fakestoreapi.com/products");
-  //       setProducts(response.data);
-  //     } catch (error) {
-  //       console.log("error message", error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
 
   const onGenderOpen = useCallback(() => {
     setCompanyOpen(false);
-  }, []);
+  }, []); 
 
+  const handleDefaultAddressSelection = (address) => {
+    // Handle the selection of the default address here
+    setDefaultAddress(address); // Assuming you want to set the selected address as the default address
+  };
+
+  
   const cart = useSelector((state) => state.cart.cart);
   const [modalVisible, setModalVisible] = useState(false);
   useEffect(() => {
@@ -130,11 +126,11 @@ const HomeScreen = () => {
         }}
       >
         <ScrollView>
-        <Header setModalVisible={setModalVisible} modalVisible={modalVisible} />
+        <Header setModalVisible={setModalVisible} modalVisible={modalVisible} defaultAddress={defaultAddress} />
         <SlideRecommender list={list} />
         <CarouselHome />
         <CategoriesList/>
-        <AddressBottom setModalVisible={setModalVisible} modalVisible={modalVisible}/>
+        <AddressBottom setModalVisible={setModalVisible} modalVisible={modalVisible} addresses={addresses} onSelectDefaultAddress={handleDefaultAddressSelection}/>
         </ScrollView>
       </SafeAreaView>
       
