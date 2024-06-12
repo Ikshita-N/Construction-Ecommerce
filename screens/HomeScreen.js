@@ -126,7 +126,8 @@ const HomeScreen = () => {
         }}
       >
         <ScrollView>
-        <Header setModalVisible={setModalVisible} modalVisible={modalVisible} defaultAddress={defaultAddress} />
+        <Header setModalVisible={setModalVisible} modalVisible={modalVisible}  />
+        {/* <Header setModalVisible={setModalVisible} modalVisible={modalVisible} defaultAddress={defaultAddress} /> */}
         <SlideRecommender list={list} />
         <CarouselHome />
         <CategoriesList/>

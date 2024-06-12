@@ -1,36 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { AntDesign, Feather, Ionicons, MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { getIpAddress } from '../../IpAddressUtils'; // Adjust the import path accordingly
+import { useFocusEffect } from '@react-navigation/native';
+const Header = ({ setModalVisible, modalVisible }) => {
+  const [defaultAddress, setDefaultAddress] = useState(null);
+  const ipAddress = getIpAddress();
 
-const Header = ({ setModalVisible, modalVisible, defaultAddress }) => {
+  const fetchDefaultAddress = async () => {
+    try {
+      const token = await AsyncStorage.getItem("authToken");
+      const response = await axios.get(`http://${ipAddress}:8000/addresses/${token}`);
+      setDefaultAddress(response.data.defaultAddress);
+    } catch (error) {
+      console.log("Error fetching default address:", error);
+    }
+  };
+  useFocusEffect(() => {
+    fetchDefaultAddress();
+  });
   return (
     <View>
-      <View
-        style={{
-          backgroundColor: "#FFAD33",
-          padding: 10,
-          flexDirection: "row",
-          alignItems: "center",
-        }}
-      >
-        <Pressable
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginHorizontal: 7,
-            gap: 10,
-            backgroundColor: "white",
-            borderRadius: 3,
-            height: 38,
-            flex: 1,
-          }}
-        >
-          <AntDesign
-            style={{ paddingLeft: 10 }}
-            name="search1"
-            size={22}
-            color="black"
-          />
+      <View style={styles.header}>
+        <Pressable style={styles.searchBar}>
+          <AntDesign style={styles.searchIcon} name="search1" size={22} color="black" />
           <TextInput placeholder="Search for products" />
         </Pressable>
         <Feather name="mic" size={24} color="black" />
@@ -38,13 +33,7 @@ const Header = ({ setModalVisible, modalVisible, defaultAddress }) => {
 
       <Pressable
         onPress={() => setModalVisible(!modalVisible)}
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 5,
-          padding: 10,
-          backgroundColor: "#FAC369",
-        }}
+        style={styles.locationBar}
       >
         <Ionicons name="location-outline" size={24} color="black" />
         <Pressable>
@@ -64,5 +53,33 @@ const Header = ({ setModalVisible, modalVisible, defaultAddress }) => {
   );
 }
 
-
 export default Header;
+
+const styles = StyleSheet.create({
+  header: {
+    backgroundColor: "#FFAD33",
+    padding: 10,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  searchBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginHorizontal: 7,
+    gap: 10,
+    backgroundColor: "white",
+    borderRadius: 3,
+    height: 38,
+    flex: 1,
+  },
+  searchIcon: {
+    paddingLeft: 10,
+  },
+  locationBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    padding: 10,
+    backgroundColor: "#FAC369",
+  },
+});
