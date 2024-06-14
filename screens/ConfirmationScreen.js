@@ -31,7 +31,7 @@ const ConfirmationScreen = () => {
   const [defaultAddress, setdefaultAddress] = useState(null); // Default address state
   const ipAddress = getIpAddress();
   const { userId, setUserId } = useContext(UserType);
-  console.log(userId)
+  // console.log(userId)
   const cart = useSelector((state) => state.cart.cart);
   const total = cart
     ?.map((item) => item.price * item.quantity)
@@ -61,14 +61,29 @@ const ConfirmationScreen = () => {
   const [selectedOption, setSelectedOption] = useState("");
   const handlePlaceOrder = async () => {
     try {
+      const token = await AsyncStorage.getItem("authToken");
         // Ensure userId is a valid ObjectId
-    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-      Alert.alert("Error", "Invalid user ID. Please try again.");
-      return;
+    // if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+    //   Alert.alert("Error", "Invalid user ID. Please try again.");
+    //   return;
+    // }
+    // console.log(cart[0].images)
+    const cart1 = []
+    // console.log(cart)
+    for (let i = 0; i<cart.length; ++i){
+      cart1.push({
+        name: cart[i].title,
+        quantity: cart[i].quantity,
+        price: cart[i].price,
+        image: cart[i].images[0]
+      })
+      // console.log(state.cart.cart)
+
     }
+    // console.log(selectedOption)
       const orderData = {
-        userId: userId,
-        cartItems: cart,
+        token: token,
+        cartItems: cart1,
         totalPrice: total,
         shippingAddress: selectedAddress,
         paymentMethod: selectedOption,
