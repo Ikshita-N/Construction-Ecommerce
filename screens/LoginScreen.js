@@ -21,7 +21,7 @@ import {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigation = useNavigation();
-    const ipAddress = getIpAddress(); // Get the IP address
+    const ipAddress = getIpAddress(); 
     useEffect(() => {
       const checkLoginStatus = async () => {
         try {
@@ -42,7 +42,7 @@ import {
         password: password,
       };
       axios
-        .post("http://${ipAddress}:8000/login", user)
+        .post(`http://${ipAddress}:8000/login`, user)
         .then((response) => {
           console.log(response);
           const token = response.data.token;

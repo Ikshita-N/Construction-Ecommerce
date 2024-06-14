@@ -5,10 +5,11 @@ const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
+const { getIpAddress } = require('../IpAddressUtils');
 
 const app = express();
 const port = 8000;
-
+const ipAddress = getIpAddress;
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -45,7 +46,7 @@ const sendVerificationEmail = async (email, verificationToken) => {
     from: "ikshita.nukavarapu@gmail.com",
     to: email,
     subject: "Email Verification..Test email",
-    text: `Please click the following link to verify your email: http://localhost:8000/verify/${verificationToken}`,
+    text: `Please click the following link to verify your email: http://${ipAddress}:8000/verify/${verificationToken}`,
   };
 
   try {
@@ -177,5 +178,75 @@ app.post("/addresses/set-default", async (req, res) => {
     res.status(500).json({ message: "Error setting default address" });
   }
 });
+
+//endpoint to store all the orders
+app.post("/orders", async (req, res) => {
+  try {
+    const { userId, cartItems, totalPrice, shippingAddress, paymentMethod } =
+      req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    //create an array of product objects from the cart Items
+    const products = cartItems.map((item) => ({
+      name: item?.title,
+      quantity: item.quantity,
+      price: item.price,
+      image: item?.image,
+    }));
+
+    //create a new Order
+    const order = new Order({
+      user: userId,
+      products: products,
+      totalPrice: totalPrice,
+      shippingAddress: shippingAddress,
+      paymentMethod: paymentMethod,
+    });
+
+    await order.save();
+
+    res.status(200).json({ message: "Order created successfully!" });
+  } catch (error) {
+    console.log("error creating orders", error);
+    res.status(500).json({ message: "Error creating orders" });
+  }
+});
+
+//get the user profile
+app.get("/profile/:token", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ user });
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving the user profile" });
+  }
+});
+
+app.get("/orders/:token",async(req,res) => {
+  try{
+    const userId = req.params.userId;
+
+    const orders = await Order.find({user:userId}).populate("user");
+
+    if(!orders || orders.length === 0){
+      return res.status(404).json({message:"No orders found for this user"})
+    }
+
+    res.status(200).json({ orders });
+  } catch(error){
+    res.status(500).json({ message: "Error"});
+  }
+})
 
 module.exports = app;

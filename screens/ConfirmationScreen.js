@@ -1,4 +1,11 @@
-import { StyleSheet, Text, View, ScrollView, Pressable,Alert } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  Pressable,
+  Alert,
+} from "react-native";
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { UserType } from "../UserContext";
@@ -7,6 +14,8 @@ import { FontAwesome5, MaterialIcons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { cleanCart } from "../redux/CartReducer";
 import { useNavigation } from "@react-navigation/native";
+import { getIpAddress } from "../IpAddressUtils";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 // import RazorpayCheckout from "react-native-razorpay";
 
 const ConfirmationScreen = () => {
@@ -19,32 +28,44 @@ const ConfirmationScreen = () => {
   const navigation = useNavigation();
   const [currentStep, setCurrentStep] = useState(0);
   const [addresses, setAddresses] = useState([]);
+  const [defaultAddress, setdefaultAddress] = useState(null); // Default address state
+  const ipAddress = getIpAddress();
   const { userId, setUserId } = useContext(UserType);
+  console.log(userId)
   const cart = useSelector((state) => state.cart.cart);
   const total = cart
     ?.map((item) => item.price * item.quantity)
     .reduce((curr, prev) => curr + prev, 0);
+
   useEffect(() => {
     fetchAddresses();
   }, []);
   const fetchAddresses = async () => {
     try {
-      const response = await axios.get(
-        `http://${ipAddress}:8000/addresses/${userId}`
-      );
-      const { addresses } = response.data;
+      const token = await AsyncStorage.getItem("authToken");
 
+      const response = await axios.get(
+        `http://${ipAddress}:8000/addresses/${token}`
+      );
+      const { addresses, defaultAddress } = response.data;
       setAddresses(addresses);
+      setdefaultAddress(defaultAddress); 
     } catch (error) {
       console.log("error", error);
     }
   };
+  // console.log(addresses)
   const dispatch = useDispatch();
   const [selectedAddress, setSelectedAdress] = useState("");
   const [option, setOption] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
   const handlePlaceOrder = async () => {
     try {
+        // Ensure userId is a valid ObjectId
+    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+      Alert.alert("Error", "Invalid user ID. Please try again.");
+      return;
+    }
       const orderData = {
         userId: userId,
         cartItems: cart,
@@ -54,7 +75,7 @@ const ConfirmationScreen = () => {
       };
 
       const response = await axios.post(
-        "http://${ipAddress}:8000/orders",
+        `http://${ipAddress}:8000/orders`,
         orderData
       );
       if (response.status === 200) {
@@ -68,49 +89,49 @@ const ConfirmationScreen = () => {
       console.log("errror", error);
     }
   };
-  const pay = async () => {
-    try {
-      const options = {
-        description: "Adding To Wallet",
-        currency: "INR",
-        name: "Amazon",
-        key: "rzp_test_E3GWYimxN7YMk8",
-        amount: total * 100,
-        prefill: {
-          email: "void@razorpay.com",
-          contact: "9191919191",
-          name: "RazorPay Software",
-        },
-        theme: { color: "#F37254" },
-      };
+  // const pay = async () => {
+  //   try {
+  //     const options = {
+  //       description: "Adding To Wallet",
+  //       currency: "INR",
+  //       name: "Amazon",
+  //       key: "rzp_test_E3GWYimxN7YMk8",
+  //       amount: total * 100,
+  //       prefill: {
+  //         email: "void@razorpay.com",
+  //         contact: "9191919191",
+  //         name: "RazorPay Software",
+  //       },
+  //       theme: { color: "#F37254" },
+  //     };
 
-    //   const data = await RazorpayCheckout.open(options);
+  //     //   const data = await RazorpayCheckout.open(options);
 
-      console.log(data)
+  //     console.log(data);
 
-      const orderData = {
-        userId: userId,
-        cartItems: cart,
-        totalPrice: total,
-        shippingAddress: selectedAddress,
-        paymentMethod: "card",
-      };
+  //     const orderData = {
+  //       userId: userId,
+  //       cartItems: cart,
+  //       totalPrice: total,
+  //       shippingAddress: selectedAddress,
+  //       paymentMethod: "card",
+  //     };
 
-      const response = await axios.post(
-        "http://${ipAddress}:8000/orders",
-        orderData
-      );
-      if (response.status === 200) {
-        navigation.navigate("Order");
-        dispatch(cleanCart());
-        console.log("order created successfully", response.data);
-      } else {
-        console.log("error creating order", response.data);
-      }
-    } catch (error) {
-      console.log("error", error);
-    }
-  };
+  //     const response = await axios.post(
+  //       `http://${ipAddress}:8000/orders`,
+  //       orderData
+  //     );
+  //     if (response.status === 200) {
+  //       navigation.navigate("Order");
+  //       dispatch(cleanCart());
+  //       console.log("order created successfully", response.data);
+  //     } else {
+  //       console.log("error creating order", response.data);
+  //     }
+  //   } catch (error) {
+  //     console.log("error", error);
+  //   }
+  // };
   return (
     <ScrollView style={{ marginTop: 55 }}>
       <View style={{ flex: 1, paddingHorizontal: 20, paddingTop: 40 }}>
@@ -166,145 +187,95 @@ const ConfirmationScreen = () => {
           ))}
         </View>
       </View>
-
       {currentStep == 0 && (
-        <View style={{ marginHorizontal: 20 }}>
-          <Text style={{ fontSize: 16, fontWeight: "bold" }}>
-            Select Delivery Address
-          </Text>
+  <View style={{ marginHorizontal: 20 }}>
+    <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+      Select Delivery Address
+    </Text>
+    
+    {addresses?.map((item, index) => (
+      <Pressable
+        key={index} 
+        style={{
+          borderWidth: 1,
+          borderColor: "#D0D0D0",
+          padding: 10,
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 5,
+          paddingBottom: 17,
+          marginVertical: 7,
+          borderRadius: 6,
+        }}
+        onPress={() => setSelectedAdress(item)} 
+      >
+        {selectedAddress && selectedAddress._id === item?._id ? (
+          <FontAwesome5 name="dot-circle" size={20} color="#008397" />
+        ) : (
+          <Entypo
+            name="circle"
+            size={20}
+            color="gray"
+          />
+        )}
+      
 
-          <Pressable>
-            {addresses?.map((item, index) => (
+        <View>
+          <View style={styles.addressHeader}>
+            <Text style={styles.addressName}>{item?.name}</Text>
+            <Entypo name="location-pin" size={24} color="red" />
+          </View>
+          <Text style={styles.addressText}>{item?.houseNo} , {item?.landmark} </Text>
+          <Text style={styles.addressText}>{item?.street}</Text>
+          <Text style={styles.addressText}>India</Text>
+          <Text style={styles.addressText}>Phone No. {item?.mobileNo}</Text>
+          <Text style={styles.addressText}>Pin code: {item.postalCode}</Text>
+
+          <View style={styles.addressActions}>
+            <Pressable style={styles.addressActionButton}>
+              <Text>Edit</Text>
+            </Pressable>
+
+            <Pressable style={styles.addressActionButton}>
+              <Text>Remove</Text>
+            </Pressable>
+
+            <Pressable
+              onPress={() => handleSetDefaultAddress(item._id)} 
+              style={[
+                styles.addressActionButton,
+                defaultAddress && defaultAddress._id === item._id && styles.defaultButton
+              ]}
+            >
+              <Text>{defaultAddress && defaultAddress._id === item._id ? "Default" : "Set as Default"}</Text>
+            </Pressable>
+          </View>
+
+          <View>
+            {selectedAddress && selectedAddress._id === item?._id && (
               <Pressable
+                onPress={() => setCurrentStep(1)}
                 style={{
-                  borderWidth: 1,
-                  borderColor: "#D0D0D0",
+                  backgroundColor: "#FFAD33",
                   padding: 10,
-                  flexDirection: "row",
+                  borderRadius: 20,
+                  justifyContent: "center",
                   alignItems: "center",
-                  gap: 5,
-                  paddingBottom: 17,
-                  marginVertical: 7,
-                  borderRadius: 6,
+                  marginTop: 10,
                 }}
               >
-                {selectedAddress && selectedAddress._id === item?._id ? (
-                  <FontAwesome5 name="dot-circle" size={20} color="#008397" />
-                ) : (
-                  <Entypo
-                    onPress={() => setSelectedAdress(item)}
-                    name="circle"
-                    size={20}
-                    color="gray"
-                  />
-                )}
-
-                <View style={{ marginLeft: 6 }}>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 3,
-                    }}
-                  >
-                    <Text style={{ fontSize: 15, fontWeight: "bold" }}>
-                      {item?.name}
-                    </Text>
-                    <Entypo name="location-pin" size={24} color="red" />
-                  </View>
-
-                  <Text style={{ fontSize: 15, color: "#181818" }}>
-                    {item?.houseNo}, {item?.landmark}
-                  </Text>
-
-                  <Text style={{ fontSize: 15, color: "#181818" }}>
-                    {item?.street}
-                  </Text>
-
-                  <Text style={{ fontSize: 15, color: "#181818" }}>
-                    India, Bangalore
-                  </Text>
-
-                  <Text style={{ fontSize: 15, color: "#181818" }}>
-                    phone No : {item?.mobileNo}
-                  </Text>
-                  <Text style={{ fontSize: 15, color: "#181818" }}>
-                    pin code : {item?.postalCode}
-                  </Text>
-
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 10,
-                      marginTop: 7,
-                    }}
-                  >
-                    <Pressable
-                      style={{
-                        backgroundColor: "#F5F5F5",
-                        paddingHorizontal: 10,
-                        paddingVertical: 6,
-                        borderRadius: 5,
-                        borderWidth: 0.9,
-                        borderColor: "#D0D0D0",
-                      }}
-                    >
-                      <Text>Edit</Text>
-                    </Pressable>
-
-                    <Pressable
-                      style={{
-                        backgroundColor: "#F5F5F5",
-                        paddingHorizontal: 10,
-                        paddingVertical: 6,
-                        borderRadius: 5,
-                        borderWidth: 0.9,
-                        borderColor: "#D0D0D0",
-                      }}
-                    >
-                      <Text>Remove</Text>
-                    </Pressable>
-
-                    <Pressable
-                      style={{
-                        backgroundColor: "#F5F5F5",
-                        paddingHorizontal: 10,
-                        paddingVertical: 6,
-                        borderRadius: 5,
-                        borderWidth: 0.9,
-                        borderColor: "#D0D0D0",
-                      }}
-                    >
-                      <Text>Set as Default</Text>
-                    </Pressable>
-                  </View>
-
-                  <View>
-                    {selectedAddress && selectedAddress._id === item?._id && (
-                      <Pressable
-                        onPress={() => setCurrentStep(1)}
-                        style={{
-                          backgroundColor: "#008397",
-                          padding: 10,
-                          borderRadius: 20,
-                          justifyContent: "center",
-                          alignItems: "center",
-                          marginTop: 10,
-                        }}
-                      >
-                        <Text style={{ textAlign: "center", color: "white" }}>
-                          Deliver to this Address
-                        </Text>
-                      </Pressable>
-                    )}
-                  </View>
-                </View>
+                <Text style={{ textAlign: "center", color: "white" }}>
+                  Deliver to this Address
+                </Text>
               </Pressable>
-            ))}
-          </Pressable>
+            )}
+          </View>
         </View>
-      )}
+      </Pressable>
+    ))}
+  </View>
+)}
+
 
       {currentStep == 1 && (
         <View style={{ marginHorizontal: 20 }}>
@@ -575,4 +546,41 @@ const ConfirmationScreen = () => {
 
 export default ConfirmationScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  addressHeader: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 3,
+  },
+  addressName: {
+    fontWeight: "bold",
+    fontSize: 15,
+  },
+  addressText: {
+    color: "#181818",
+    fontSize: 15,
+  },
+  addressActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginTop: 7,
+  },
+  addressActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginTop: 7,
+  },
+  addressActionButton: {
+    backgroundColor: "#F5F5F5",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 5,
+    borderWidth: 0.9,
+    borderColor: "#D0D0D0",
+  },
+  defaultButton: {
+    backgroundColor: "#FFD700",
+  },
+});

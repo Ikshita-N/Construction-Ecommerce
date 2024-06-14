@@ -13,7 +13,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import {
   decrementQuantity,
-  incementQuantity,
+  incrementQuantity,
   removeFromCart,
 } from "../redux/CartReducer";
 import { useNavigation } from "@react-navigation/native";
@@ -28,7 +28,7 @@ const CartScreen = () => {
     .reduce((curr, prev) => curr + prev, 0);
   const dispatch = useDispatch();
   const increaseQuantity = (item) => {
-    dispatch(incementQuantity(item));
+    dispatch(incrementQuantity(item));
   };
   const decreaseQuantity = (item) => {
     dispatch(decrementQuantity(item));
@@ -138,12 +138,7 @@ const CartScreen = () => {
                 >
                   {item?.price}
                 </Text>
-                {/* <Image
-                    style={{ width: 30, height: 30, resizeMode: "contain" }}
-                    source={{
-                      uri: "https://assets.stickpng.com/thumbs/5f4924cc68ecc70004ae7065.png",
-                    }}
-                  /> */}
+               
                 <Text style={{ color: "green" }}>In Stock</Text>
                 {/* <Text style={{ fontWeight: "500", marginTop: 6 }}>
                     {item?.rating?.rate} ratings
