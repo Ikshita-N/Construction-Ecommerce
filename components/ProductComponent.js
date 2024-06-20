@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, Image, Pressable, StyleSheet } from "react-native";
-import StarRating from "react-native-star-rating-widget"; // for star rating
+import StarRating from "react-native-star-rating-widget"; 
 
 const ProductComponent = ({ navigation, product }) => {
   const discount = Math.round((product.mrp - product.price) * 100 / product.mrp);

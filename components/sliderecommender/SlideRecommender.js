@@ -1,13 +1,20 @@
 import React from 'react';
 import { ScrollView, View, Text, Image, StyleSheet, Pressable } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-const SlideRecommender = ({ Categories, onCategoryPress }) => {
+const SlideRecommender = ({ Categories }) => {
+  const navigation = useNavigation();
+
+  const handleCategoryPress = (index) => {
+    navigation.navigate('Category', { index });
+  };
+
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
       {Categories.map((category, index) => (
         <Pressable
           key={index}
-          onPress={() => onCategoryPress(category.name)}
+          onPress={() => handleCategoryPress(index)}
           style={styles.container}
         >
           <Image source={{ uri: category.image }} style={styles.image} />
