@@ -7,6 +7,8 @@ import CategoryProduct from '../components/CategoryProduct'; // Adjust based on 
 import Products from '../data'; // Adjust based on your project structure
 import Header from "../components/header/Header"; // Adjust based on your project structure
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AddressBottom from '../components/addressBottom/index'; // Adjust based on your project structure
+import axios from 'axios'; // Import Axios for making HTTP requests
 
 const CategoryPage = ({ route }) => {
   const { index } = route.params;
@@ -14,28 +16,44 @@ const CategoryPage = ({ route }) => {
   const [products, setProducts] = useState([]);
   const [maxPrice, setMaxPrice] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
+  const [addresses, setAddresses] = useState([]);
   const [filters, setFilters] = useState({
     discount: [],
     price: [0, 0]
   });
   const [showFilters, setShowFilters] = useState(false);
   const [showSortByModal, setShowSortByModal] = useState(false);
-
-  const handleDefaultAddressSelection = (address) => {
-    setDefaultAddress(address); 
-  };
+  const [error, setError] = useState(null); // State to hold error information
 
   useEffect(() => {
     const categoryProducts = Products.filter(product => product.category === Categories[index].name);
     const maxPriceValue = Math.ceil(Math.max(...categoryProducts.map(product => product.price)) / 100) * 100;
     setMaxPrice(maxPriceValue);
     setFilters(prevFilters => ({ ...prevFilters, price: [0, maxPriceValue] }));
-    setProducts(categoryProducts); // Initialize products with all products in the category
-  }, []);
+    setProducts(categoryProducts);
+  }, [index]);
 
   useEffect(() => {
     applyFilters();
   }, [filters, sortBy]);
+
+  const handleDefaultAddressSelection = async (address) => {
+    try {
+      // Example URL and payload for setting default address
+      const url = 'https://example.com/api/setDefaultAddress';
+      const payload = {
+        addressId: address.id,
+        // Include other required fields if necessary
+      };
+
+      const response = await axios.post(url, payload);
+      console.log('Default address set successfully:', response.data);
+      // Update state or perform other actions on success
+    } catch (error) {
+      console.error('Error setting default address:', error.message);
+      setError('Failed to set default address. Please try again.'); // Update error state
+    }
+  };
 
   const handleFilterChange = (filterType, value) => {
     let newFilters = { ...filters };
@@ -48,20 +66,21 @@ const CategoryPage = ({ route }) => {
       newFilters.price = value;
     }
     setFilters(newFilters);
+    applyFilters(newFilters);
   };
 
-  const applyFilters = () => {
+  const applyFilters = (filtersToApply = filters) => {
     let filteredProducts = Products.filter(product => product.category === Categories[index].name);
 
-    if (filters.discount.length > 0) {
+    if (filtersToApply.discount.length > 0) {
       filteredProducts = filteredProducts.filter(product => {
         const discountPercentage = getDiscountPercentage(product.price, product.mrp);
-        return filters.discount.some(option => discountPercentage >= option);
+        return filtersToApply.discount.some(option => discountPercentage >= option);
       });
     }
 
     filteredProducts = filteredProducts.filter(product => {
-      return product.price >= filters.price[0] && product.price <= filters.price[1];
+      return product.price >= filtersToApply.price[0] && product.price <= filtersToApply.price[1];
     });
 
     filteredProducts.sort((a, b) => {
@@ -102,29 +121,29 @@ const CategoryPage = ({ route }) => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <View style={styles.container}>
-        <SafeAreaView
-          style={{
-            paddingTop: Platform.OS === "android" ? 40 : 0,
-            flex: 1,
-            backgroundColor: "white",
-          }}
-        >
-          <Header />
-        </SafeAreaView>
+    <View style={styles.container}>
+      <SafeAreaView
+        style={{
+          paddingTop: Platform.OS === "android" ? 40 : 0,
+          backgroundColor: "white",
+        }}
+      >
+        <Header setModalVisible={setModalVisible} modalVisible={modalVisible}  />
+        <AddressBottom setModalVisible={setModalVisible} modalVisible={modalVisible} addresses={addresses} onSelectDefaultAddress={handleDefaultAddressSelection}/>
+      </SafeAreaView>
 
-        <View style={styles.header}>
-          <TouchableOpacity onPress={toggleSortByModal} style={styles.sortByContainer}>
-            <Text style={styles.sortByText}>Sort By: {sortByLabelMapping[sortBy]}</Text>
-            <Ionicons name="chevron-down" size={20} color="black" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={toggleFilters} style={styles.filtersButton}>
-            <Text style={styles.filterText}>Filters</Text>
-            <Ionicons name="filter-outline" size={24} color="black" />
-          </TouchableOpacity>
-        </View>
+      <View style={styles.fixedHeader}>
+        <TouchableOpacity onPress={toggleSortByModal} style={styles.sortByContainer}>
+          <Text style={styles.sortByText}>Sort By: {sortByLabelMapping[sortBy]}</Text>
+          <Ionicons name="chevron-down" size={20} color="black" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={toggleFilters} style={styles.filtersButton}>
+          <Text style={styles.filterText}>Filters</Text>
+          <Ionicons name="filter-outline" size={24} color="black" />
+        </TouchableOpacity>
+      </View>
 
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Modal
           animationType="slide"
           transparent={true}
@@ -170,10 +189,6 @@ const CategoryPage = ({ route }) => {
                 </TouchableOpacity>
               ))}
             </View>
-
-            <TouchableOpacity onPress={applyFilters} style={styles.applyButton}>
-              <Text style={styles.applyButtonText}>Apply Filters</Text>
-            </TouchableOpacity>
           </View>
         )}
 
@@ -192,11 +207,17 @@ const CategoryPage = ({ route }) => {
             </View>
           ))}
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+
+      {error && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      )}
+    </View>
   );
 };
-
+// Mapping for displaying sort by labels
 const sortByLabelMapping = {
   'rating-high': 'Highest Rating',
   'price-high': 'Price High to Low',
@@ -206,7 +227,6 @@ const sortByLabelMapping = {
   'discount-high': 'Discount High to Low',
   'discount-low': 'Discount Low to High',
 };
-
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
