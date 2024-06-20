@@ -24,54 +24,13 @@ import SlideRecommender from "../components/sliderecommender/SlideRecommender";
 import Header from "../components/header/Header";
 import CategoriesList from "../components/categorieslist";
 import AddressBottom from "../components/addressBottom";
+import jwt_decode from "jwt-decode";
 
 const HomeScreen = () => {
-  const list = [
-    {
-      id: "0",
-      images: ["https://m.media-amazon.com/images/I/714rkFrqqXL._SX450_.jpg"],
-      name: "Drills",
-    },
-    {
-      id: "1",
-      images: [
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKS2m60i8MP1TW1jFSscKzFIXPMISaxt6g8g&s",
-      ],
-      name: "Panels",
-    },
-    {
-      id: "3",
-      images: [
-        "https://cpimg.tistatic.com/05198619/b/4/Black-HDPE-Water-Pipe.jpg",
-      ],
-      name: "Pipes",
-    },
-    {
-      id: "4",
-      images: [
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSx-IWm6NPWKgErHHczPgyjAHpQrnqWEnCVPg&s",
-      ],
-      name: "Sheets",
-    },
-    {
-      id: "5",
-      images: [
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR11nYPMIPm-U8Ry8wVDPgnWHcPCM1DGMou6w&s",
-      ],
-      name: "Rods",
-    },
-    {
-      id: "6",
-      images: [
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDYJZB8MWseh2poK_gv2g3fak3mw_GAvOc7Q&s",
-      ],
-      name: "Paints",
-    },
-  ];
+
   const [products, setProducts] = useState([]);
   const navigation = useNavigation();
   const [open, setOpen] = useState(false);
-  // const [category, setCategory] = useState("jewelery");
   const { userId, setUserId } = useContext(UserType);
   const ipAddress = getIpAddress();
   const [addresses, setAddresses] = useState([]);
@@ -127,7 +86,7 @@ const HomeScreen = () => {
         <ScrollView>
         <Header setModalVisible={setModalVisible} modalVisible={modalVisible}  />
         {/* <Header setModalVisible={setModalVisible} modalVisible={modalVisible} defaultAddress={defaultAddress} /> */}
-        <SlideRecommender list={list} />
+        <SlideRecommender Categories={Categories} />
         <CarouselHome />
         <CategoriesList/>
         <AddressBottom setModalVisible={setModalVisible} modalVisible={modalVisible} addresses={addresses} onSelectDefaultAddress={handleDefaultAddressSelection}/>

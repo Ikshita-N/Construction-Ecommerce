@@ -1,38 +1,42 @@
-import { ScrollView, StyleSheet, Text, View, Pressable, Image } from 'react-native'
-import React from 'react'
+import React from 'react';
+import { ScrollView, View, Text, Image, StyleSheet, Pressable } from 'react-native';
 
-const SlideRecommender = ({ list }) => { // Receive the list prop here
+const SlideRecommender = ({ Categories, onCategoryPress }) => {
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-      {list.map((item, index) => (
+      {Categories.map((category, index) => (
         <Pressable
-          key={item.id}
-          style={{
-            margin: 10,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
+          key={index}
+          onPress={() => onCategoryPress(category.name)}
+          style={styles.container}
         >
-          <Image
-            style={{ width: 50, height: 50, resizeMode: "contain" }}
-            source={{ uri: item.images[0] }}
-          />
-          <Text
-            style={{
-              textAlign: "center",
-              fontSize: 12,
-              fontWeight: 500,
-              marginTop: 5,
-            }}
-          >
-            {item?.name}
+          <Image source={{ uri: category.image }} style={styles.image} />
+          <Text style={styles.text} numberOfLines={2} ellipsizeMode="tail">
+            {category.name}
           </Text>
         </Pressable>
       ))}
-    </ScrollView> 
-  )
-}
+    </ScrollView>
+  );
+};
 
-export default SlideRecommender
+const styles = StyleSheet.create({
+  container: {
+    padding: 10,
+    alignItems: 'center',
+  },
+  image: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+  },
+  text: {
+    marginTop: 5,
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    maxWidth: 120,
+  },
+});
 
-const styles = StyleSheet.create({})
+export default SlideRecommender;
