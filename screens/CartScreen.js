@@ -17,7 +17,7 @@ import {
   removeFromCart,
 } from "../redux/CartReducer";
 import { useNavigation } from "@react-navigation/native";
-import Categories from "../categories";
+import Categories from "../Categories/index";
 import { Products } from "../data";
 
 const CartScreen = () => {

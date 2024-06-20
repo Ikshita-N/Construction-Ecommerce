@@ -17,7 +17,7 @@ import { useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { UserType } from "../UserContext";
 import ProductComponent from "../components/ProductComponent";
-import Categories from "../categories";
+import Categories from "../Categories/index";
 import CarouselHome from "../components/caruosel/Caruosel";
 import { getIpAddress } from "../IpAddressUtils";
 import SlideRecommender from "../components/sliderecommender/SlideRecommender";
@@ -71,7 +71,7 @@ const HomeScreen = () => {
   const [products, setProducts] = useState([]);
   const navigation = useNavigation();
   const [open, setOpen] = useState(false);
-  const [category, setCategory] = useState("jewelery");
+  // const [category, setCategory] = useState("jewelery");
   const { userId, setUserId } = useContext(UserType);
   const ipAddress = getIpAddress();
   const [addresses, setAddresses] = useState([]);
@@ -83,8 +83,7 @@ const HomeScreen = () => {
   }, []); 
 
   const handleDefaultAddressSelection = (address) => {
-    // Handle the selection of the default address here
-    setDefaultAddress(address); // Assuming you want to set the selected address as the default address
+    setDefaultAddress(address); 
   };
 
   

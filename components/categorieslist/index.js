@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import React, { useState } from 'react'
-import Categories from '../../categories'
+import Categories from '../../Categories/index'
 import Products from '../../data'
 import ProductComponent from '../ProductComponent'
 import { useNavigation } from '@react-navigation/native'
@@ -19,11 +19,11 @@ const CategoriesList = () => {
                     fontWeight: "bold",
                   }}
                 >
-                  {category}
+                  {category.name}
                 </Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                   {Products.filter(
-                    (product) => product.category === Categories[index]
+                    (product) => product.category === Categories[index].name
                   ).map((product) => (
                     <ProductComponent
                       key={product.id}
