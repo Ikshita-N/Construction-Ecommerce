@@ -16,6 +16,11 @@ const ProductComponent = ({ navigation, product }) => {
           images: product.images,
           mrp: product.mrp,
           item: product,
+          category: product.category,
+          description: product.description,
+          keyFeatures:product.keyFeatures,
+          specifications:product.specifications,
+          reviews: product.reviews,
         })
       }
       style={styles.pressable}

@@ -16,6 +16,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../redux/CartReducer";
+// import Products from "../data";
 
 const ProductInfoScreen = () => {
   const route = useRoute();
@@ -23,6 +24,7 @@ const ProductInfoScreen = () => {
   const navigation = useNavigation();
   const [addedToCart, setAddedToCart]= useState(false);
   const height = (width * 100) / 100;
+  // const product = Products.find((item) => item.id === route.params.productId);
   const dispatch = useDispatch();
 const addItemToCart= (item) => {
     setAddedToCart(true);
@@ -32,6 +34,7 @@ const addItemToCart= (item) => {
     },60000)
 }
 const cart= useSelector((state) => state.cart.cart);
+
 console.log(cart);
   return (
     <ScrollView
@@ -74,7 +77,7 @@ console.log(cart);
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {route.params.images.map((item, index) => (
+        {route.params.images.map((item, id) => (
           <ImageBackground
             style={{
               width,
@@ -83,7 +86,7 @@ console.log(cart);
               resizeMode: "contain",
             }}
             source={{ uri: item }}
-            key={index}
+            key={id}
           >
             <View
               style={{
@@ -112,7 +115,7 @@ console.log(cart);
                     fontSize: 12,
                   }}
                 >
-                  20% off
+                  12% off
                 </Text>
               </View>
 
@@ -177,6 +180,20 @@ console.log(cart);
         >
           ₹{route?.params?.price}
         </Text>
+        
+        <Text
+          style={{
+            fontSize: 15,
+            fontWeight: 300,
+            marginTop: 6,
+          }}
+        >
+        <Text>MRP: </Text>
+          ₹{route?.params?.mrp}
+          
+
+
+        </Text>
       </View>
 
       <Text
@@ -194,14 +211,14 @@ console.log(cart);
           padding: 10,
         }}
       >
-        <Text>Color: </Text>
+        <Text>Description: </Text>
         <Text
           style={{
             fontSize: 15,
             fontWeight: "bold",
           }}
         >
-          {route?.params?.color}
+          {route?.params?.description}
         </Text>
       </View>
 
@@ -212,14 +229,14 @@ console.log(cart);
           padding: 10,
         }}
       >
-        <Text>Size: </Text>
+        <Text>Category: </Text>
         <Text
           style={{
             fontSize: 15,
             fontWeight: "bold",
           }}
         >
-          {route?.params?.size}
+          {route?.params?.category}
         </Text>
       </View>
 
@@ -243,7 +260,10 @@ console.log(cart);
             marginVertical: 15,
           }}
         >
-          Total: ₹{route.params.price}
+          Total: ₹{route.params.price} 
+          <Text style={{
+            fontSize: 12
+          }}> (Including all taxes)</Text>
         </Text>
         <Text
           style={{
