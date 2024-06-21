@@ -15,12 +15,14 @@ const ProductComponent = ({ navigation, product }) => {
           price: product.price,
           images: product.images,
           mrp: product.mrp,
+          rating: product.ratinng,
           item: product,
           category: product.category,
           description: product.description,
           keyFeatures:product.keyFeatures,
           specifications:product.specifications,
           reviews: product.reviews,
+          discount: discount,
         })
       }
       style={styles.pressable}

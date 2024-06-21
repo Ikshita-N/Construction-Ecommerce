@@ -18,6 +18,7 @@ import ProfileScreen from "../screens/ProfileScreen";
 import ConfirmationScreen from "../screens/ConfirmationScreen";
 import OrderScreen from "../screens/OrderScreen";
 import CategoryPage from "../screens/CategoryPage";
+import Favorites from "../screens/Favorites";
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -136,6 +137,12 @@ const StackNavigator = () => {
           component={CategoryPage}
           options={{ headerShown: false }}
         />
+        <Stack.Screen
+          name="Fav"
+          component={Favorites}
+          options={{ headerShown: false }}
+        />
+
       </Stack.Navigator>
     </NavigationContainer>
   );

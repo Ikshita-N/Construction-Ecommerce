@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -8,34 +9,100 @@ import {
   ImageBackground,
   Dimensions,
 } from "react-native";
-import React, { useState } from "react";
-import { AntDesign } from "@expo/vector-icons";
-import { Feather } from "@expo/vector-icons";
+import {
+  AntDesign,
+  Feather,
+  MaterialCommunityIcons,
+  Ionicons,
+} from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { Ionicons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../redux/CartReducer";
-// import Products from "../data";
+import { FontAwesome } from "@expo/vector-icons";
 
 const ProductInfoScreen = () => {
   const route = useRoute();
   const { width } = Dimensions.get("window");
   const navigation = useNavigation();
-  const [addedToCart, setAddedToCart]= useState(false);
+  const [addedToCart, setAddedToCart] = useState(false);
   const height = (width * 100) / 100;
-  // const product = Products.find((item) => item.id === route.params.productId);
   const dispatch = useDispatch();
-const addItemToCart= (item) => {
+
+  const addItemToCart = (item) => {
     setAddedToCart(true);
     dispatch(addToCart(item));
-    setTimeout(() =>{
-        setAddedToCart(false);
-    },60000)
-}
-const cart= useSelector((state) => state.cart.cart);
+    setTimeout(() => {
+      setAddedToCart(false);
+    }, 60000);
+  };
 
-console.log(cart);
+  const cart = useSelector((state) => state.cart.cart);
+  const product = route.params;
+
+  // console.log("Product Rating:", product.rating);
+
+  const renderStars = (rating) => {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 !== 0;
+
+    for (let i = 1; i <= fullStars; i++) {
+      stars.push(
+        <FontAwesome
+          key={`star-${i}`}
+          name="star"
+          size={20}
+          color="#FFD700"
+          style={{ marginRight: 2 }}
+        />
+      );
+    }
+
+    if (hasHalfStar) {
+      stars.push(
+        <FontAwesome
+          key={`star-half-${Math.random()}`}
+          name="star-half-empty"
+          size={20}
+          color="#FFD700"
+          style={{ marginRight: 2 }}
+        />
+      );
+    }
+
+    const emptyStars = 5 - Math.ceil(rating);
+
+    for (let i = 1; i <= emptyStars; i++) {
+      stars.push(
+        <FontAwesome
+          key={`empty-${i}`}
+          name="star-o"
+          size={20}
+          color="#CCCCCC"
+          style={{ marginRight: 2 }}
+        />
+      );
+    }
+
+    return stars;
+  };
+  const handleBuyNow = () => {
+    // Perform actions before navigating if needed
+    navigation.navigate("Confirm", { product });
+  };
+
+  const handleAddToCart = () => {
+    dispatch(addToCart(product));
+    setAddedToCart(true);
+    setTimeout(() => {
+      setAddedToCart(false);
+    }, 2000); // Optional: Reset addedToCart state after 2 seconds
+    navigation.navigate("Cart"); // Navigate to CartScreen
+  };
+  const navigateToFavourites = () => {
+    navigation.navigate("Fav");
+  };
+
   return (
     <ScrollView
       style={{
@@ -45,6 +112,7 @@ console.log(cart);
       }}
       showsVerticalScrollIndicator={false}
     >
+      {/* Header and Search */}
       <View
         style={{
           backgroundColor: "#FFAD33",
@@ -76,16 +144,17 @@ console.log(cart);
         <Feather name="mic" size={24} color="black" />
       </View>
 
+      {/* Product Images */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {route.params.images.map((item, id) => (
+        {product.images.map((image, id) => (
           <ImageBackground
             style={{
               width,
-              height,
+              height: height,
               marginTop: 25,
               resizeMode: "contain",
             }}
-            source={{ uri: item }}
+            source={{ uri: image }}
             key={id}
           >
             <View
@@ -115,7 +184,7 @@ console.log(cart);
                     fontSize: 12,
                   }}
                 >
-                  12% off
+                  {product.discount}% off
                 </Text>
               </View>
 
@@ -138,61 +207,66 @@ console.log(cart);
               </View>
             </View>
 
-            <View
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 20,
-                backgroundColor: "#E0E0E0",
-                justifyContent: "center",
-                alignItems: "center",
-                flexDirection: "row",
-                marginTop: "auto",
-                marginLeft: 20,
-                marginBottom: 20,
-              }}
-            >
-              <AntDesign name="hearto" size={24} color="black" />
+            <View>
+              <Pressable
+                onPress={navigateToFavourites}
+                style={{
+                  position: "absolute",
+                  bottom: -300,
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
+                  backgroundColor: "#E0E0E0",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  flexDirection: "row",
+                  marginTop: "auto",
+                  marginLeft: 20,
+                  marginBottom: 20,
+                }}
+              >
+                <AntDesign name="hearto" size={24} color="black" />
+              </Pressable>
             </View>
           </ImageBackground>
         ))}
       </ScrollView>
-      <View
-        style={{
-          padding: 10,
-        }}
-      >
-        <Text
-          style={{
-            fontWeight: "500",
-            fontSize: 15,
-          }}
-        >
-          {route?.params?.title}
-        </Text>
+
+      {/* Product Details */}
+      <View style={{ padding: 10 }}>
+        {/* Product Title with Stars */}
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Text
+            style={{
+              fontWeight: "500",
+              fontSize: 18,
+              marginRight: 5,
+            }}
+          >
+            {product.title}
+          </Text>
+
+          {renderStars(product.rating)}
+        </View>
 
         <Text
           style={{
             fontSize: 18,
-            fontWeight: 600,
+            fontWeight: "600",
             marginTop: 6,
           }}
         >
-          ₹{route?.params?.price}
+          ₹{product.price}
         </Text>
-        
+
         <Text
           style={{
             fontSize: 15,
-            fontWeight: 300,
+            fontWeight: "300",
             marginTop: 6,
           }}
         >
-        <Text>MRP: </Text>
-          ₹{route?.params?.mrp}
-          
-
-
+          <Text>MRP: </Text>₹{product.mrp}
         </Text>
       </View>
 
@@ -211,14 +285,12 @@ console.log(cart);
           padding: 10,
         }}
       >
-        <Text>Description: </Text>
         <Text
           style={{
             fontSize: 15,
-            fontWeight: "bold",
           }}
         >
-          {route?.params?.description}
+          {product.description}
         </Text>
       </View>
 
@@ -229,15 +301,54 @@ console.log(cart);
           padding: 10,
         }}
       >
-        <Text>Category: </Text>
         <Text
           style={{
             fontSize: 15,
             fontWeight: "bold",
           }}
         >
-          {route?.params?.category}
+          Category:
         </Text>
+        <Text> {product.category}</Text>
+      </View>
+
+      <View
+        style={{
+          padding: 10,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 15,
+            fontWeight: "bold",
+          }}
+        >
+          Key Features:
+        </Text>
+        {product.keyFeatures.map((feature, index) => (
+          <Text key={index}>- {feature}</Text>
+        ))}
+      </View>
+
+      <View
+        style={{
+          padding: 10,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 15,
+            fontWeight: "bold",
+          }}
+        >
+          Specifications:
+        </Text>
+        {Object.keys(product.specifications).map((key, index) => (
+          <Text key={index}>
+            - <Text style={{ fontWeight: "bold" }}>{key}</Text>:{" "}
+            {product.specifications[key]}
+          </Text>
+        ))}
       </View>
 
       <Text
@@ -260,10 +371,15 @@ console.log(cart);
             marginVertical: 15,
           }}
         >
-          Total: ₹{route.params.price} 
-          <Text style={{
-            fontSize: 12
-          }}> (Including all taxes)</Text>
+          Total: ₹{product.price}
+          <Text
+            style={{
+              fontSize: 12,
+            }}
+          >
+            {" "}
+            (Including all taxes)
+          </Text>
         </Text>
         <Text
           style={{
@@ -286,7 +402,7 @@ console.log(cart);
         <Ionicons name="location" size={24} color="black" />
         <Text
           style={{
-            fontsize: 15,
+            fontSize: 15,
             fontWeight: "500",
           }}
         >
@@ -305,10 +421,33 @@ console.log(cart);
         IN Stock
       </Text>
 
-      <Pressable 
-      onPress={()=> addItemToCart(route?.params?.item)}
+      <Pressable
+  onPress={() => {
+    addItemToCart(product);
+    handleAddToCart();
+  }}
+  style={{
+    backgroundColor: "#FFC72C",
+    padding: 10,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 10,
+    marginVertical: 10,
+  }}
+>
+  {addedToCart ? (
+    <View>
+      <Text>Added to Cart</Text>
+    </View>
+  ) : (
+    <Text>Add to Cart</Text>
+  )}
+</Pressable>
+
+      <Pressable
         style={{
-          backgroundColor: "#FFC72C",
+          backgroundColor: "#FFAC1C",
           padding: 10,
           borderRadius: 10,
           justifyContent: "center",
@@ -316,29 +455,38 @@ console.log(cart);
           marginHorizontal: 10,
           marginVertical: 10,
         }}
+        onPress={handleBuyNow}
       >
-      {addedToCart ? (
-        <View> 
-        <Text>
-        Added to Cart
-        </Text></View>
-      ): (
-        <Text>Add to Cart</Text>
-      )}
-       
-      </Pressable>
-
-      <Pressable style={{
-         backgroundColor: "#FFAC1C",
-          padding: 10,
-          borderRadius: 10,
-          justifyContent: "center",
-          alignItems: "center",
-          marginHorizontal: 10,
-          marginVertical: 10,
-      }}>
         <Text>Buy Now</Text>
       </Pressable>
+
+      <View
+        style={{
+          padding: 10,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 15,
+            fontWeight: "bold",
+          }}
+        >
+          Reviews:
+        </Text>
+        {product.reviews.map((review, index) => (
+          <View key={index} style={{ marginVertical: 5 }}>
+            <Text style={{ fontWeight: "bold" }}>
+              - Reviewer: {review.reviewer}
+            </Text>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Text>Rating: </Text>
+              {renderStars(review.rating)}
+            </View>
+            <Text>Comment: {review.comment}</Text>
+            <Text>Date: {review.date}</Text>
+          </View>
+        ))}
+      </View>
     </ScrollView>
   );
 };

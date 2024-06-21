@@ -667,7 +667,7 @@ available: 17,
   mrp: 899.99,
   price: 849.99,
   rating: 4.5,
-  category: Categories[1].name, // Category resolved to name
+  category: Categories[1].name, 
   images: [
     "https://5.imimg.com/data5/AS/OR/IA/SELLER-82001374/1.jpg",
     "https://5.imimg.com/data5/GLADMIN/Default/2023/2/CQ/AW/NZ/82001374/orange-avc25-motor-plate-compactor-500x500.jpg",

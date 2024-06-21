@@ -1,76 +1,51 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View, Keyboard } from 'react-native';
-import { AntDesign, Feather, Ionicons, MaterialIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import { getIpAddress } from '../../IpAddressUtils'; // Adjust the import path accordingly
-import { useFocusEffect } from '@react-navigation/native';
+// Header.js
 
-const Header = ({ setModalVisible, modalVisible }) => {
-  const [defaultAddress, setDefaultAddress] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const ipAddress = getIpAddress();
+import React, { useState } from "react";
+import { View, Pressable, TextInput, StyleSheet } from "react-native";
+import { AntDesign, Feather } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { Products } from "../../data"; 
 
-  const fetchDefaultAddress = async () => {
-    try {
-      const token = await AsyncStorage.getItem("authToken");
-      const response = await axios.get(`http://${ipAddress}:8000/addresses/${token}`);
-      setDefaultAddress(response.data.defaultAddress);
-    } catch (error) {
-      console.log("Error fetching default address:", error);
+const Header = () => {
+  const navigation = useNavigation();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = () => {
+    const searchTerm = searchQuery.trim().toLowerCase();
+
+    // Find the product that matches the search term in title or category
+    const foundProduct = Products.find(
+      (product) =>
+        product.title.toLowerCase().includes(searchTerm) ||
+        product.category.toLowerCase().includes(searchTerm)
+    );
+
+    if (foundProduct) {
+      // Navigate to ProductInfoScreen with the found product
+      navigation.navigate("Info", { ...foundProduct });
+    } else {
+      // Handle case where no product is found
+      console.log("No product found for search term:", searchTerm);
+      // Optionally, display a message or handle the error
     }
   };
 
-  useFocusEffect(() => {
-    fetchDefaultAddress();
-  });
-
-  const handleSearch = () => {
-    // Perform search logic here
-    console.log("Searching for:", searchQuery);
-    // Hide the keyboard after search
-    Keyboard.dismiss();
-  };
-
   return (
-    <View>
-      <View style={styles.header}>
-        <Pressable style={styles.searchBar}>
-          <AntDesign style={styles.searchIcon} name="search1" size={22} color="black" />
-          <TextInput
-            placeholder="Search for products"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            onSubmitEditing={handleSearch} // Trigger search on text input submission
-            style={styles.searchInput} // Add this line for additional styling
-          />
-        </Pressable>
-        <Feather name="mic" size={24} color="black" />
-      </View>
-
-      <Pressable
-        onPress={() => setModalVisible(!modalVisible)}
-        style={styles.locationBar}
-      >
-        <Ionicons name="location-outline" size={24} color="black" />
-        <Pressable>
-          {defaultAddress ? (
-            <Text>
-              Deliver to {defaultAddress?.name} - {defaultAddress?.street}
-            </Text>
-          ) : (
-            <Text style={{ fontSize: 13, fontWeight: "500" }}>
-              Add an Address
-            </Text>
-          )}
-        </Pressable>
-        <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
+    <View style={styles.header}>
+      <Pressable style={styles.searchBar}>
+        <AntDesign name="search1" size={22} color="black" />
+        <TextInput
+          placeholder="Search for products"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          onSubmitEditing={handleSearch}
+          style={styles.searchInput}
+        />
       </Pressable>
+      <Feather name="mic" size={24} color="black" />
     </View>
   );
 };
-
-export default Header;
 
 const styles = StyleSheet.create({
   header: {
@@ -89,18 +64,10 @@ const styles = StyleSheet.create({
     height: 38,
     flex: 1,
   },
-  searchIcon: {
-    paddingLeft: 10,
-  },
   searchInput: {
-    flex: 1, // Ensure the TextInput takes available space
-    padding: 10, // Add padding for better UX
-  },
-  locationBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
+    flex: 1,
     padding: 10,
-    backgroundColor: "#FAC369",
   },
 });
+
+export default Header;
