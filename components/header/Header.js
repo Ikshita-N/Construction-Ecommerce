@@ -1,46 +1,94 @@
-// Header.js
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  Keyboard,
+} from "react-native";
+import {
+  AntDesign,
+  Feather,
+  Ionicons,
+  MaterialIcons,
+} from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { getIpAddress } from "../../IpAddressUtils";
+import { useFocusEffect } from "@react-navigation/native";
 
-import React, { useState } from "react";
-import { View, Pressable, TextInput, StyleSheet } from "react-native";
-import { AntDesign, Feather } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import { Products } from "../../data"; 
-
-const Header = () => {
-  const navigation = useNavigation();
+const Header = ({ setModalVisible, modalVisible }) => {
+  const [defaultAddress, setDefaultAddress] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const ipAddress = getIpAddress();
 
-  const handleSearch = () => {
-    const searchTerm = searchQuery.trim().toLowerCase();
-    const foundProduct = Products.find(
-      (product) =>
-        product.title.toLowerCase().includes(searchTerm) ||
-        product.category.toLowerCase().includes(searchTerm)
-    );
-
-    if (foundProduct) {
-      navigation.navigate("Info", { ...foundProduct });
-    } else {
-      console.log("No product found for search term:", searchTerm);
+  const fetchDefaultAddress = async () => {
+    try {
+      const token = await AsyncStorage.getItem("authToken");
+      const response = await axios.get(
+        `http://${ipAddress}:8000/addresses/${token}`
+      );
+      setDefaultAddress(response.data.defaultAddress);
+    } catch (error) {
+      console.log("Error fetching default address:", error);
     }
   };
 
+  useFocusEffect(() => {
+    fetchDefaultAddress();
+  });
+
+  const handleSearch = () => {
+    console.log("Searching for:", searchQuery);
+
+    Keyboard.dismiss();
+  };
+
   return (
-    <View style={styles.header}>
-      <Pressable style={styles.searchBar}>
-        <AntDesign name="search1" size={22} color="black" />
-        <TextInput
-          placeholder="Search for products"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          onSubmitEditing={handleSearch}
-          style={styles.searchInput}
-        />
+    <View>
+      <View style={styles.header}>
+        <Pressable style={styles.searchBar}>
+          <AntDesign
+            style={styles.searchIcon}
+            name="search1"
+            size={22}
+            color="black"
+          />
+          <TextInput
+            placeholder="Search for products"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            onSubmitEditing={handleSearch}
+            style={styles.searchInput}
+          />
+        </Pressable>
+        <Feather name="mic" size={24} color="black" />
+      </View>
+
+      <Pressable
+        onPress={() => setModalVisible(!modalVisible)}
+        style={styles.locationBar}
+      >
+        <Ionicons name="location-outline" size={24} color="black" />
+        <Pressable>
+          {defaultAddress ? (
+            <Text>
+              Deliver to {defaultAddress?.name} - {defaultAddress?.street}
+            </Text>
+          ) : (
+            <Text style={{ fontSize: 13, fontWeight: "500" }}>
+              Add an Address
+            </Text>
+          )}
+        </Pressable>
+        <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
       </Pressable>
-      <Feather name="mic" size={24} color="black" />
     </View>
   );
 };
+
+export default Header;
 
 const styles = StyleSheet.create({
   header: {
@@ -59,10 +107,18 @@ const styles = StyleSheet.create({
     height: 38,
     flex: 1,
   },
+  searchIcon: {
+    paddingLeft: 10,
+  },
   searchInput: {
     flex: 1,
     padding: 10,
   },
+  locationBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    padding: 10,
+    backgroundColor: "#FAC369",
+  },
 });
-
-export default Header;

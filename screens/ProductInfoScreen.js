@@ -18,6 +18,7 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../redux/CartReducer";
+import { addToFavorites } from "../redux/FavReducer";
 import { FontAwesome } from "@expo/vector-icons";
 
 const ProductInfoScreen = () => {
@@ -37,6 +38,7 @@ const ProductInfoScreen = () => {
   };
 
   const cart = useSelector((state) => state.cart.cart);
+  const favorites = useSelector((state) => state.favorites.favorites);
   const product = route.params;
 
   const renderStars = (rating) => {
@@ -85,7 +87,6 @@ const ProductInfoScreen = () => {
     return stars;
   };
   const handleBuyNow = () => {
-    // Perform actions before navigating if needed
     navigation.navigate("Confirm", { product });
   };
 
@@ -95,9 +96,11 @@ const ProductInfoScreen = () => {
     setTimeout(() => {
       setAddedToCart(false);
     }, 2000); // Optional: Reset addedToCart state after 2 seconds
-    navigation.navigate("Cart"); // Navigate to CartScreen
+    navigation.navigate("Cart"); 
   };
+
   const navigateToFavourites = () => {
+    dispatch(addToFavorites(product));
     navigation.navigate("Fav");
   };
 

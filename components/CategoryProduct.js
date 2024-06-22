@@ -1,14 +1,12 @@
-import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { AirbnbRating } from 'react-native-ratings'; 
+import React from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { AirbnbRating } from 'react-native-ratings';
 import { useNavigation } from '@react-navigation/native';
 
 const CategoryProduct = ({ item }) => {
   const { id, title, images, price, rating, mrp, reviews, category, description, keyFeatures, specifications } = item;
   const image = images[0];
   const discount = Math.round(((mrp - price) / mrp) * 100);
-  const [isInFavourites, setIsInFavourites] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
 
   const navigateToProductInfo = () => {
@@ -27,9 +25,6 @@ const CategoryProduct = ({ item }) => {
       discount,
     });
   };
-  if (isLoading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
 
   return (
     <View style={styles.categoryProduct}>
