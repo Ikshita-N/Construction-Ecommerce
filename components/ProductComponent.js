@@ -1,56 +1,53 @@
 import React from "react";
 import { View, Text, Image, Pressable, StyleSheet } from "react-native";
-import StarRating from "react-native-star-rating-widget"; 
+import StarRating from "react-native-star-rating-widget";
 
 const ProductComponent = ({ navigation, product }) => {
-  const discount = Math.round((product.mrp - product.price) * 100 / product.mrp);
-  const truncatedTitle = product.title.length > 14 ? product.title.substring(0, 14) + '...' : product.title;
+  const {
+    id, title, price, images, mrp, rating, category, description, keyFeatures, specifications, reviews,
+  } = product;
+
+  const discount = Math.round((mrp - price) * 100 / mrp);
+  const truncatedTitle = title.length > 14 ? `${title.substring(0, 14)}...` : title;
+
+  const navigateToProductInfo = () => {
+    navigation.navigate("Info", {
+      id,
+      title,
+      price,
+      images,
+      mrp,
+      rating,
+      item: product,
+      category,
+      description,
+      keyFeatures,
+      specifications,
+      reviews,
+      discount,
+    });
+  };
 
   return (
-    <Pressable
-      onPress={() =>
-        navigation.navigate("Info", {
-          id: product.id,
-          title: product.title,
-          price: product.price,
-          images: product.images,
-          mrp: product.mrp,
-          rating: product.ratinng,
-          item: product,
-          category: product.category,
-          description: product.description,
-          keyFeatures:product.keyFeatures,
-          specifications:product.specifications,
-          reviews: product.reviews,
-          discount: discount,
-        })
-      }
-      style={styles.pressable}
-    >
-      <Image
-        style={styles.image}
-        source={{ uri: product.images[0] }}
-      />
-
+    <Pressable onPress={navigateToProductInfo} style={styles.pressable}>
+      <Image style={styles.image} source={{ uri: images[0] }} />
       <Text style={styles.title}>{truncatedTitle}</Text>
-      
       <View style={styles.ratingContainer}>
-        <Text style={styles.ratingText}>{product.rating}</Text>
+        <Text style={styles.ratingText}>{rating}</Text>
         <StarRating
-          rating={product.rating}
+          rating={rating}
           starSize={20}
-          maxStars={1} // Display only one star
+          maxStars={1}
           animationConfig={{ scale: 1.2 }}
           emptyColor="#FFD700"
           fullColor="#FFD700"
           halfColor="#FFD700"
-          disabled={true}
+          disabled
         />
       </View>
-
       <View style={styles.priceContainer}>
-        <Text style={styles.price}>₹{product.price}</Text>
-        <Text style={styles.mrp}>₹{product.mrp}</Text>
+        <Text style={styles.price}>₹{price}</Text>
+        <Text style={styles.mrp}>₹{mrp}</Text>
       </View>
     </Pressable>
   );

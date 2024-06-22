@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Platform, Modal } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
-import Categories from '../Categories'; // Adjust based on your project structure
-import CategoryProduct from '../components/CategoryProduct'; // Adjust based on your project structure
-import Products from '../data'; // Adjust based on your project structure
-import Header from "../components/header/Header"; // Adjust based on your project structure
+import Categories from '../Categories'; 
+import CategoryProduct from '../components/CategoryProduct'; 
+import Products from '../data'; 
+import Header from "../components/header/Header"; 
 import { SafeAreaView } from 'react-native-safe-area-context';
-import AddressBottom from '../components/addressBottom/index'; // Adjust based on your project structure
-import axios from 'axios'; // Import Axios for making HTTP requests
+import AddressBottom from '../components/addressBottom/index'; 
+import axios from 'axios'; 
 
 const CategoryPage = ({ route }) => {
   const { index } = route.params;
@@ -196,13 +196,7 @@ const CategoryPage = ({ route }) => {
           {products.map(product => (
             <View key={product.id} style={styles.categoryItems}>
               <CategoryProduct
-                id={product.id}
-                title={product.title}
-                image={product.images[0]}
-                price={product.price}
-                rating={product.rating}
-                mrp={product.mrp}
-                reviews={product.reviews}
+                item={product}
               />
             </View>
           ))}

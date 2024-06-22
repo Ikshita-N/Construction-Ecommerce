@@ -12,8 +12,6 @@ const Header = () => {
 
   const handleSearch = () => {
     const searchTerm = searchQuery.trim().toLowerCase();
-
-    // Find the product that matches the search term in title or category
     const foundProduct = Products.find(
       (product) =>
         product.title.toLowerCase().includes(searchTerm) ||
@@ -21,12 +19,9 @@ const Header = () => {
     );
 
     if (foundProduct) {
-      // Navigate to ProductInfoScreen with the found product
       navigation.navigate("Info", { ...foundProduct });
     } else {
-      // Handle case where no product is found
       console.log("No product found for search term:", searchTerm);
-      // Optionally, display a message or handle the error
     }
   };
 

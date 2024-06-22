@@ -39,8 +39,6 @@ const ProductInfoScreen = () => {
   const cart = useSelector((state) => state.cart.cart);
   const product = route.params;
 
-  // console.log("Product Rating:", product.rating);
-
   const renderStars = (rating) => {
     const stars = [];
     const fullStars = Math.floor(rating);
@@ -235,7 +233,7 @@ const ProductInfoScreen = () => {
       {/* Product Details */}
       <View style={{ padding: 10 }}>
         {/* Product Title with Stars */}
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View >
           <Text
             style={{
               fontWeight: "500",
@@ -245,10 +243,11 @@ const ProductInfoScreen = () => {
           >
             {product.title}
           </Text>
-
-          {renderStars(product.rating)}
         </View>
-
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+        {renderStars(product.rating)}
+            <Text>({product.rating})</Text>
+        </View>
         <Text
           style={{
             fontSize: 18,
