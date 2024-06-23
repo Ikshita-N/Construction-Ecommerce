@@ -53,7 +53,7 @@ const CategoryProduct = ({ item, isFavorite = false }) => {
 
   const handleAddToCart = () => {
     dispatch(addToCart(item));
-    navigation.navigate("Cart"); // Navigate to Cart after adding to cart
+    navigation.navigate("Cart"); 
   };
 
   const handleRemoveFromFavorites = () => {

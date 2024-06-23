@@ -1,21 +1,9 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  Pressable,
-  TextInput,
-  Image,
-} from "react-native";
-import React, { useState } from "react";
+import React from "react";
+import { StyleSheet, Text, View, ScrollView, Pressable, Image } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  decrementQuantity,
-  incrementQuantity,
-  removeFromCart,
-} from "../redux/CartReducer";
+import { decrementQuantity, incrementQuantity, removeFromCart } from "../redux/CartReducer";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import Header2 from "../components/header/Header2";
 import { addToFavorites, removeFromFavorites } from "../redux/FavReducer";
@@ -25,35 +13,43 @@ const CartScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const product = route.params;
-  const navigateToFavorites = () => {
-        navigation.navigate("Fav"); 
-      };
-  console.log(cart);
+
   const total = cart
     ?.map((item) => item.price * item.quantity)
-    .reduce((curr, prev) => curr + prev, 0);
+    .reduce((acc, curr) => acc + curr, 0);
+
   const dispatch = useDispatch();
+
   const increaseQuantity = (item) => {
     dispatch(incrementQuantity(item));
   };
+
   const decreaseQuantity = (item) => {
     dispatch(decrementQuantity(item));
   };
+
   const deleteItem = (item) => {
     dispatch(removeFromCart(item));
   };
+
   const favorites = useSelector((state) => state.favorites.favorites);
-  console.log(favorites)
-  const itemInFav=(item)=>{
-    return favorites.some(favoritesItem => favoritesItem=== item);
-  }
-  const favButton = () => {
-    itemInFav(product) ? dispatch(removeFromFavorites(product)) : dispatch(addToFavorites(product)); dispatch(removeFromCart(product));
+
+  const itemInFav = (item) => {
+    return favorites.some((favoritesItem) => favoritesItem.id === item.id);
+  };
+
+  const favButton = (item) => {
+    if (itemInFav(item)) {
+      dispatch(removeFromFavorites(item));
+    } else {
+      dispatch(addToFavorites(item));
+    }
+    dispatch(removeFromCart(item));
   };
 
   return (
     <ScrollView style={{ marginTop: 55, flex: 1, backgroundColor: "white" }}>
-      <Header2/>
+      <Header2 />
 
       <View style={{ padding: 10, flexDirection: "row", alignItems: "center" }}>
         <Text style={{ fontSize: 18, fontWeight: "400" }}>Subtotal : </Text>
@@ -227,22 +223,11 @@ const CartScreen = () => {
                   borderRadius: 5,
                   borderColor: "#C0C0C0",
                   borderWidth: 0.6,
+                  marginStart: 25
                 }}
+                onPress={() => favButton(item)}
               >
-                <Text onPress={favButton}>{!itemInFav(product)?('Add to Favorites'):('Added to Favorites')}</Text>
-              </Pressable>
-
-              <Pressable
-                style={{
-                  backgroundColor: "white",
-                  paddingHorizontal: 8,
-                  paddingVertical: 10,
-                  borderRadius: 5,
-                  borderColor: "#C0C0C0",
-                  borderWidth: 0.6,
-                }}
-              >
-                <Text>See More Like this</Text>
+                <Text>{!itemInFav(item) ? 'Add to Favorites' : 'Added to Favorites'}</Text>
               </Pressable>
             </Pressable>
           </View>
@@ -255,7 +240,6 @@ const CartScreen = () => {
 export default CartScreen;
 
 const styles = StyleSheet.create({
-  
   searchBar: {
     flexDirection: "row",
     alignItems: "center",
@@ -271,14 +255,13 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    paddingVertical: 8, 
+    paddingVertical: 8,
     fontSize: 16,
   },
   favoriteContainer: {
-    padding: 5, 
+    padding: 5,
   },
   favoriteIcon: {
     paddingRight: 1,
   },
 });
-
