@@ -13,7 +13,7 @@ export const CartSlice = createSlice({
       if (itemPresent) {
         itemPresent.quantity++;
       } else {
-        state.cart.push({ ...action.payload, quantity: 1 });
+        state.cart.push({ ...action.payload, quantity: 0 });
       }
     },
     removeFromCart: (state, action) => {

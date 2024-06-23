@@ -3,17 +3,10 @@ import { View, FlatList, StyleSheet, Text, TextInput, Pressable, ScrollView } fr
 import { useSelector } from "react-redux";
 import CategoryProduct from "../components/CategoryProduct";
 import { AntDesign, Feather } from "@expo/vector-icons";
+import Header2 from "../components/header/Header2";
 
 const Favorites = () => {
-  const [searchQuery, setSearchQuery] = useState(""); // Correct placement of useState hook
-
   const favorites = useSelector((state) => state.favorites.favorites);
-
-  const handleSearch = () => {
-    console.log("Searching for:", searchQuery);
-    // Assuming you have a function to handle search
-  };
-
   const navigateToFavorites = () => {
     navigation.navigate("Fav"); 
   };
@@ -27,33 +20,8 @@ const Favorites = () => {
       }}
       showsVerticalScrollIndicator={false}
     >
-      <View style={styles.container}>
-        {/* Header and Search */}
-        <View style={styles.header}>
-          <Pressable style={styles.searchBar}>
-            <AntDesign
-              style={styles.searchIcon}
-              name="search1"
-              size={22}
-              color="black"
-            />
-            <TextInput
-              placeholder="Search for products"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              onSubmitEditing={handleSearch}
-              style={styles.searchInput}
-            />
-          </Pressable>
-          <Pressable onPress={navigateToFavorites} style={styles.favoriteContainer}>
-            <AntDesign
-              style={styles.favoriteIcon}
-              name="hearto"
-              size={24}
-              color="black"
-            />
-          </Pressable>
-        </View>
+    <Header2 />
+      
         <Text style={styles.heading}>Favorites</Text>
         {favorites.length === 0 ? (
           <Text style={styles.emptyText}>No favorites added yet.</Text>
@@ -65,7 +33,7 @@ const Favorites = () => {
             contentContainerStyle={styles.list}
           />
         )}
-      </View>
+     
     </ScrollView>
   );
 };

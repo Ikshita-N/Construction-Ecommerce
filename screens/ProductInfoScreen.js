@@ -18,8 +18,9 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../redux/CartReducer";
-import { addToFavorites } from "../redux/FavReducer";
+import { addToFavorites, removeFromFavorites } from "../redux/FavReducer";
 import { FontAwesome } from "@expo/vector-icons";
+import Header2 from "../components/header/Header2";
 
 const ProductInfoScreen = () => {
   const route = useRoute();
@@ -36,9 +37,14 @@ const ProductInfoScreen = () => {
       setAddedToCart(false);
     }, 60000);
   };
-
   const cart = useSelector((state) => state.cart.cart);
+  const itemInCart=(item)=>{
+    return cart.some(cartItem => cartItem.id === item.id);
+  }
   const favorites = useSelector((state) => state.favorites.favorites);
+  const itemInFav=(item)=>{
+    return favorites.some(favoritesItem => favoritesItem.id === item.id);
+  }
   const product = route.params;
 
   const renderStars = (rating) => {
@@ -94,15 +100,16 @@ const ProductInfoScreen = () => {
     dispatch(addToCart(product));
     setAddedToCart(true);
     setTimeout(() => {
+
       setAddedToCart(false);
-    }, 2000); // Optional: Reset addedToCart state after 2 seconds
-    navigation.navigate("Cart"); 
+    }, 2000);
   };
 
-  const navigateToFavourites = () => {
-    dispatch(addToFavorites(product));
-    navigation.navigate("Fav");
+  const favButton = () => {
+    itemInFav(product) ? dispatch(removeFromFavorites(product)) : dispatch(addToFavorites(product));
   };
+  
+
 
   return (
     <ScrollView
@@ -113,38 +120,7 @@ const ProductInfoScreen = () => {
       }}
       showsVerticalScrollIndicator={false}
     >
-      {/* Header and Search */}
-      <View
-        style={{
-          backgroundColor: "#FFAD33",
-          padding: 10,
-          flexDirection: "row",
-          alignItems: "center",
-        }}
-      >
-        <Pressable
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginHorizontal: 7,
-            gap: 10,
-            backgroundColor: "white",
-            borderRadius: 3,
-            height: 38,
-            flex: 1,
-          }}
-        >
-          <AntDesign
-            style={{ paddingLeft: 10 }}
-            name="search1"
-            size={22}
-            color="black"
-          />
-          <TextInput placeholder="Search for products" />
-        </Pressable>
-        <Feather name="mic" size={24} color="black" />
-      </View>
-
+    <Header2/>
       {/* Product Images */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {product.images.map((image, id) => (
@@ -210,7 +186,7 @@ const ProductInfoScreen = () => {
 
             <View>
               <Pressable
-                onPress={navigateToFavourites}
+                onPress={favButton}
                 style={{
                   position: "absolute",
                   bottom: -300,
@@ -226,7 +202,11 @@ const ProductInfoScreen = () => {
                   marginBottom: 20,
                 }}
               >
-                <AntDesign name="hearto" size={24} color="black" />
+              {itemInFav(product)?
+                <AntDesign name="heart" size={24} color="black" />
+                :
+              <AntDesign name="hearto" size={24} color="black" />
+            }
               </Pressable>
             </View>
           </ImageBackground>
@@ -438,7 +418,7 @@ const ProductInfoScreen = () => {
     marginVertical: 10,
   }}
 >
-  {addedToCart ? (
+  {itemInCart(product) ? (
     <View>
       <Text>Added to Cart</Text>
     </View>

@@ -114,12 +114,14 @@ const CategoryProduct = ({ item, isFavorite = false }) => {
 };
 
 const styles = StyleSheet.create({
+
   categoryProduct: {
     flexDirection: "row",
     padding: 10,
     backgroundColor: "white",
-    borderBottomWidth: 1,
+    borderBottomWidth: 8,
     borderBottomColor: "#eee",
+    gap:5
   },
   productImage: {
     width: 100,

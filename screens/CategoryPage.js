@@ -9,6 +9,7 @@ import Header from "../components/header/Header";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AddressBottom from '../components/addressBottom/index'; 
 import axios from 'axios'; 
+import Header2 from '../components/header/Header2';
 
 const CategoryPage = ({ route }) => {
   const { index } = route.params;
@@ -122,26 +123,7 @@ const CategoryPage = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView
-        style={{
-          paddingTop: Platform.OS === "android" ? 40 : 0,
-          backgroundColor: "white",
-        }}
-      >
-        <Header setModalVisible={setModalVisible} modalVisible={modalVisible}  />
-        <AddressBottom setModalVisible={setModalVisible} modalVisible={modalVisible} addresses={addresses} onSelectDefaultAddress={handleDefaultAddressSelection}/>
-      </SafeAreaView>
-
-      <View style={styles.fixedHeader}>
-        <TouchableOpacity onPress={toggleSortByModal} style={styles.sortByContainer}>
-          <Text style={styles.sortByText}>Sort By: {sortByLabelMapping[sortBy]}</Text>
-          <Ionicons name="chevron-down" size={20} color="black" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={toggleFilters} style={styles.filtersButton}>
-          <Text style={styles.filterText}>Filters</Text>
-          <Ionicons name="filter-outline" size={24} color="black" />
-        </TouchableOpacity>
-      </View>
+      <Header2/>
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Modal
@@ -225,16 +207,10 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
   },
-  container: {
+  container:{
+    marginTop: 55,
     flex: 1,
-    backgroundColor: '#ffffff',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    marginBottom: 10,
+    backgroundColor: "white",
   },
   sortByContainer: {
     flexDirection: 'row',

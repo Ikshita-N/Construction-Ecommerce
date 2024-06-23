@@ -13,6 +13,7 @@ import axios from "axios";
 import { UserType } from "../UserContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getIpAddress } from '../IpAddressUtils';
+import Header2 from "../components/header/Header2";
 
 const ProfileScreen = () => {
   const { userId, setUserId } = useContext(UserType);
@@ -90,7 +91,8 @@ const ProfileScreen = () => {
   }, []);
   
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} >
+    <Header2/>
       <Text style={styles.welcomeText}>Welcome {user?.name}</Text>
   
       <View style={styles.buttonsContainer}>
@@ -139,9 +141,9 @@ export default ProfileScreen;
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
     flex: 1,
     backgroundColor: "white",
+    marginTop: 55, flex: 1, backgroundColor: "white" 
   },
   headerStyle: {
     backgroundColor: "#00CED1",

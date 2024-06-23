@@ -16,11 +16,18 @@ import {
   incrementQuantity,
   removeFromCart,
 } from "../redux/CartReducer";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import Header2 from "../components/header/Header2";
+import { addToFavorites, removeFromFavorites } from "../redux/FavReducer";
 
 const CartScreen = () => {
   const cart = useSelector((state) => state.cart.cart);
-  const [searchQuery, setSearchQuery] = useState("");
+  const navigation = useNavigation();
+  const route = useRoute();
+  const product = route.params;
+  const navigateToFavorites = () => {
+        navigation.navigate("Fav"); 
+      };
   console.log(cart);
   const total = cart
     ?.map((item) => item.price * item.quantity)
@@ -35,41 +42,18 @@ const CartScreen = () => {
   const deleteItem = (item) => {
     dispatch(removeFromCart(item));
   };
-  const navigation = useNavigation();
-  const handleSearch = () => {
-    console.log("Searching for:", searchQuery);
-    Keyboard.dismiss();
+  const favorites = useSelector((state) => state.favorites.favorites);
+  console.log(favorites)
+  const itemInFav=(item)=>{
+    return favorites.some(favoritesItem => favoritesItem=== item);
+  }
+  const favButton = () => {
+    itemInFav(product) ? dispatch(removeFromFavorites(product)) : dispatch(addToFavorites(product)); dispatch(removeFromCart(product));
   };
-  const navigateToFavorites = () => {
-    navigation.navigate("Fav"); 
-  };
+
   return (
     <ScrollView style={{ marginTop: 55, flex: 1, backgroundColor: "white" }}>
-       <View style={styles.header}>
-        <Pressable style={styles.searchBar}>
-          <AntDesign
-            style={styles.searchIcon}
-            name="search1"
-            size={22}
-            color="black"
-          />
-          <TextInput
-            placeholder="Search for products"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            onSubmitEditing={handleSearch}
-            style={styles.searchInput}
-          />
-        </Pressable>
-        <Pressable onPress={navigateToFavorites} style={styles.favoriteContainer}>
-          <AntDesign
-            style={styles.favoriteIcon}
-            name="hearto"
-            size={24}
-            color="black"
-          />
-        </Pressable>
-      </View>
+      <Header2/>
 
       <View style={{ padding: 10, flexDirection: "row", alignItems: "center" }}>
         <Text style={{ fontSize: 18, fontWeight: "400" }}>Subtotal : </Text>
@@ -245,7 +229,7 @@ const CartScreen = () => {
                   borderWidth: 0.6,
                 }}
               >
-                <Text>Save For Later</Text>
+                <Text onPress={favButton}>{!itemInFav(product)?('Add to Favorites'):('Added to Favorites')}</Text>
               </Pressable>
 
               <Pressable
@@ -271,13 +255,7 @@ const CartScreen = () => {
 export default CartScreen;
 
 const styles = StyleSheet.create({
-  header: {
-    backgroundColor: "#FFAD33",
-    padding: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between", // Ensure icons are aligned at opposite ends
-  },
+  
   searchBar: {
     flexDirection: "row",
     alignItems: "center",
@@ -293,21 +271,14 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    paddingVertical: 8, // Adjust input padding
-    fontSize: 16, // Adjust input font size
+    paddingVertical: 8, 
+    fontSize: 16,
   },
   favoriteContainer: {
-    padding: 5, // Adjust padding around the heart icon
+    padding: 5, 
   },
   favoriteIcon: {
     paddingRight: 1,
-  },
-  locationBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-    padding: 10,
-    backgroundColor: "#FAC369",
   },
 });
 
