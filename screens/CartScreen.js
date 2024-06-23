@@ -7,7 +7,7 @@ import {
   TextInput,
   Image,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { Feather } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,11 +17,10 @@ import {
   removeFromCart,
 } from "../redux/CartReducer";
 import { useNavigation } from "@react-navigation/native";
-import Categories from "../Categories/index";
-import { Products } from "../data";
 
 const CartScreen = () => {
   const cart = useSelector((state) => state.cart.cart);
+  const [searchQuery, setSearchQuery] = useState("");
   console.log(cart);
   const total = cart
     ?.map((item) => item.price * item.quantity)
@@ -37,38 +36,39 @@ const CartScreen = () => {
     dispatch(removeFromCart(item));
   };
   const navigation = useNavigation();
+  const handleSearch = () => {
+    console.log("Searching for:", searchQuery);
+    Keyboard.dismiss();
+  };
+  const navigateToFavorites = () => {
+    navigation.navigate("Fav"); 
+  };
   return (
     <ScrollView style={{ marginTop: 55, flex: 1, backgroundColor: "white" }}>
-      <View
-        style={{
-          backgroundColor: "#FFAD33",
-          padding: 10,
-          flexDirection: "row",
-          alignItems: "center",
-        }}
-      >
-        <Pressable
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginHorizontal: 7,
-            gap: 10,
-            backgroundColor: "white",
-            borderRadius: 3,
-            height: 38,
-            flex: 1,
-          }}
-        >
+       <View style={styles.header}>
+        <Pressable style={styles.searchBar}>
           <AntDesign
-            style={{ paddingLeft: 10 }}
+            style={styles.searchIcon}
             name="search1"
             size={22}
             color="black"
           />
-          <TextInput placeholder="Search for products" />
+          <TextInput
+            placeholder="Search for products"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            onSubmitEditing={handleSearch}
+            style={styles.searchInput}
+          />
         </Pressable>
-
-        <Feather name="mic" size={24} color="black" />
+        <Pressable onPress={navigateToFavorites} style={styles.favoriteContainer}>
+          <AntDesign
+            style={styles.favoriteIcon}
+            name="hearto"
+            size={24}
+            color="black"
+          />
+        </Pressable>
       </View>
 
       <View style={{ padding: 10, flexDirection: "row", alignItems: "center" }}>
@@ -270,4 +270,44 @@ const CartScreen = () => {
 
 export default CartScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  header: {
+    backgroundColor: "#FFAD33",
+    padding: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between", // Ensure icons are aligned at opposite ends
+  },
+  searchBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    backgroundColor: "white",
+    borderRadius: 3,
+    height: 38,
+    flex: 1,
+    paddingHorizontal: 10,
+  },
+  searchIcon: {
+    paddingLeft: 10,
+  },
+  searchInput: {
+    flex: 1,
+    paddingVertical: 8, // Adjust input padding
+    fontSize: 16, // Adjust input font size
+  },
+  favoriteContainer: {
+    padding: 5, // Adjust padding around the heart icon
+  },
+  favoriteIcon: {
+    paddingRight: 1,
+  },
+  locationBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    padding: 10,
+    backgroundColor: "#FAC369",
+  },
+});
+

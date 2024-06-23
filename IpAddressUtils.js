@@ -1,4 +1,4 @@
-let ipAddress = '10.200.33.253';
+let ipAddress = '192.168.0.164';
 
 const setIpAddress = (newIpAddress) => {
   ipAddress = newIpAddress;

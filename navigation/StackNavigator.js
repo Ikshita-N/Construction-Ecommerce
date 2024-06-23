@@ -66,6 +66,8 @@ const StackNavigator = () => {
           }}
         />
 
+          
+
         <Tab.Screen
           name="Cart"
           component={CartScreen}

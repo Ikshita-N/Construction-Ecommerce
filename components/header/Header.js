@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Pressable,
   StyleSheet,
@@ -7,21 +7,18 @@ import {
   View,
   Keyboard,
 } from "react-native";
-import {
-  AntDesign,
-  Feather,
-  Ionicons,
-  MaterialIcons,
-} from "@expo/vector-icons";
+import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { getIpAddress } from "../../IpAddressUtils";
-import { useFocusEffect } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
+import Favorites from "../../screens/Favorites";
 
 const Header = ({ setModalVisible, modalVisible }) => {
   const [defaultAddress, setDefaultAddress] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const ipAddress = getIpAddress();
+  const navigation = useNavigation();
 
   const fetchDefaultAddress = async () => {
     try {
@@ -35,14 +32,17 @@ const Header = ({ setModalVisible, modalVisible }) => {
     }
   };
 
-  useFocusEffect(() => {
+  useEffect(() => {
     fetchDefaultAddress();
-  });
+  }, []);
 
   const handleSearch = () => {
     console.log("Searching for:", searchQuery);
-
     Keyboard.dismiss();
+  };
+
+  const navigateToFavorites = () => {
+    navigation.navigate("Fav"); 
   };
 
   return (
@@ -63,14 +63,21 @@ const Header = ({ setModalVisible, modalVisible }) => {
             style={styles.searchInput}
           />
         </Pressable>
-        <Feather name="mic" size={24} color="black" />
+        <Pressable onPress={navigateToFavorites} style={styles.favoriteContainer}>
+          <AntDesign
+            style={styles.favoriteIcon}
+            name="hearto"
+            size={24}
+            color="black"
+          />
+        </Pressable>
       </View>
 
       <Pressable
         onPress={() => setModalVisible(!modalVisible)}
         style={styles.locationBar}
       >
-        <Ionicons name="location-outline" size={24} color="black" />
+        <MaterialIcons name="location-on" size={24} color="black" />
         <Pressable>
           {defaultAddress ? (
             <Text>
@@ -96,23 +103,31 @@ const styles = StyleSheet.create({
     padding: 10,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between", // Ensure icons are aligned at opposite ends
   },
   searchBar: {
     flexDirection: "row",
     alignItems: "center",
-    marginHorizontal: 7,
     gap: 10,
     backgroundColor: "white",
     borderRadius: 3,
     height: 38,
     flex: 1,
+    paddingHorizontal: 10,
   },
   searchIcon: {
     paddingLeft: 10,
   },
   searchInput: {
     flex: 1,
-    padding: 10,
+    paddingVertical: 8, // Adjust input padding
+    fontSize: 16, // Adjust input font size
+  },
+  favoriteContainer: {
+    padding: 5, // Adjust padding around the heart icon
+  },
+  favoriteIcon: {
+    paddingRight: 1,
   },
   locationBar: {
     flexDirection: "row",
