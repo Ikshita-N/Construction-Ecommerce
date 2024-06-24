@@ -1,12 +1,5 @@
-import {
-  Image,
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  Pressable,
-} from "react-native";
 import React, { useLayoutEffect, useEffect, useContext, useState } from "react";
+import { Image, StyleSheet, Text, View, ScrollView, Pressable, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
 import axios from "axios";
@@ -14,16 +7,19 @@ import { UserType } from "../UserContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getIpAddress } from '../IpAddressUtils';
 import Header2 from "../components/header/Header2";
-import reducer from "../reducer";
+import initialState from "../reducer"; 
+import AccountDetails from "./AccountDetails"; // Import the AccountDetails screen here
 
 const ProfileScreen = () => {
   const { userId, setUserId } = useContext(UserType);
-  console.log(userId);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
   const ipAddress = getIpAddress();
   
+  const [state, setState] = useState(initialState);
+  const [user, setUser] = useState();
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: "",
@@ -31,9 +27,6 @@ const ProfileScreen = () => {
       headerLeft: () => (
         <Image
           style={styles.headerImage}
-          // source={{
-          //   uri: " ",
-          // }}
         />
       ),
       headerRight: () => (
@@ -44,8 +37,6 @@ const ProfileScreen = () => {
       ),
     });
   }, []);
-  
-  const [user, setUser] = useState();
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -55,6 +46,8 @@ const ProfileScreen = () => {
         );
         const { user } = response.data;
         setUser(user);
+        // If you want to update the state with the fetched user data:
+        // setState(prevState => ({ ...prevState, user }));
       } catch (error) {
         console.log("error", error);
       }
@@ -62,7 +55,7 @@ const ProfileScreen = () => {
 
     fetchUserProfile();
   }, []);
-  
+
   const logout = () => {
     clearAuthToken();
   };
@@ -89,17 +82,21 @@ const ProfileScreen = () => {
 
     fetchOrders();
   }, []);
-  
+
+  const navigateToAccountDetails = () => {
+    navigation.navigate('AccountDetails');
+  };
+
   return (
     <ScrollView style={styles.container}>
       <Header2 />
-      <Text style={styles.welcomeText}>Welcome {user?.displayName}!</Text>
+      <Text style={styles.welcomeText}>Welcome {state.user.displayName}!</Text>
   
       <View style={styles.buttonsContainer}>
         <Pressable style={styles.button}>
           <Text style={styles.buttonText}>Your orders</Text>
         </Pressable>
-        <Pressable style={styles.button}>
+        <Pressable style={styles.button} onPress={navigateToAccountDetails}>
           <Text style={styles.buttonText}>Your Account</Text>
         </Pressable>
         <Pressable style={styles.button}>
@@ -175,7 +172,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#E0E0E0",
     borderRadius: 25,
     margin: 10,
-    width: '40%',
+    width: '80%',
     alignItems: "center",
   },
   buttonText: {

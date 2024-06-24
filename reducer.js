@@ -11,16 +11,16 @@ const initialState = {
     ],
     basket: [],
     user: {
-      displayName: "Viswas",
-      email: "viswas@example.com",
-      password: "viswas",
+      displayName: "Ikshita",
+      email: "ikshita@example.com",
+      password: "Ikshita",
       photoURL:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVI8wwjmbk07RHjMaoxGcLQw5kRfAizckn7g&s",
-      gender: "Male",
+        "https://t4.ftcdn.net/jpg/02/29/75/83/240_F_229758328_7x8jwCwjtBMmC6rgFzLFhZoEpLobB6L8.jpg",
+      gender: "Female",
       addresses: [
         {
           id: "1",
-          name: "Viswas",
+          name: "Ikshita",
           street: "123 Main Street",
           city: "Bengaluru",
           state: "Karnataka",
@@ -30,7 +30,7 @@ const initialState = {
         },
         {
           id: "2",
-          name: "Viswas",
+          name: "Ikshita",
           street: "456 Park Avenue",
           city: "Mumbai",
           state: "Maharashtra",
@@ -60,7 +60,4 @@ const initialState = {
     products: [],
     userLoggedIn: false,
   };
-  
-  
-  
   export default initialState;

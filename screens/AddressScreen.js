@@ -27,7 +27,32 @@ const AddressScreen = () => {
   const [mobileError, setMobileError] = useState("");
   const [pincodeError, setPincodeError] = useState("");
 
+  const validateMobileNo = (number) => {
+    if (number.length === 0) {
+      setMobileError("");
+    } else if (!/^\d{10}$/.test(number)) {
+      setMobileError("Invalid input, please enter 10 digits");
+    } else {
+      setMobileError("");
+    }
+  };
+
+  const validatePincode = (code) => {
+    if (code.length === 0) {
+      setPincodeError("");
+    } else if (!/^\d{5}$/.test(code)) {
+      setPincodeError("Invalid input, please enter 5 digits");
+    } else {
+      setPincodeError("");
+    }
+  };
+
   const handleAddAddress = async () => {
+    if (mobileError || pincodeError) {
+      Alert.alert("Error", "Please correct the errors before submitting.");
+      return;
+    }
+
     const address = {
       name,
       mobileNo,
@@ -36,22 +61,6 @@ const AddressScreen = () => {
       landmark,
       postalCode,
     };
-
-    // Validate Mobile Number
-    if (!/^\d{10}$/.test(mobileNo)) {
-      setMobileError("Invalid input, please enter again");
-      return;
-    } else {
-      setMobileError("");
-    }
-
-    // Validate Pincode
-    if (!/^\d{5}$/.test(postalCode)) {
-      setPincodeError("Invalid input, please enter again");
-      return;
-    } else {
-      setPincodeError("");
-    }
 
     const token = await AsyncStorage.getItem("authToken");
 
@@ -72,18 +81,7 @@ const AddressScreen = () => {
       })
       .catch((error) => {
         Alert.alert("Error", "Failed to add address");
-
-        if (error.response) {
-          console.log("Error response data:", error.response.data);
-          console.log("Error response status:", error.response.status);
-          console.log("Error response headers:", error.response.headers);
-        } else if (error.request) {
-          console.log("Error request data:", error.request);
-        } else {
-          console.log("Error message:", error.message);
-        }
-
-        console.log("Error config:", error.config);
+        console.log("Error:", error);
       });
   };
 
@@ -115,7 +113,10 @@ const AddressScreen = () => {
           </Text>
           <TextInput
             value={mobileNo}
-            onChangeText={(text) => setMobileNo(text)}
+            onChangeText={(text) => {
+              setMobileNo(text);
+              validateMobileNo(text);
+            }}
             placeholderTextColor={"black"}
             style={[
               styles.input,
@@ -170,7 +171,10 @@ const AddressScreen = () => {
           <Text style={{ fontSize: 15, fontWeight: "bold" }}>Pincode</Text>
           <TextInput
             value={postalCode}
-            onChangeText={(text) => setPostalCode(text)}
+            onChangeText={(text) => {
+              setPostalCode(text);
+              validatePincode(text);
+            }}
             placeholderTextColor={"black"}
             style={[
               styles.input,
