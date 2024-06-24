@@ -80,7 +80,7 @@ import {
         {/* <Text>LoginScreen</Text> */}
         <View>
           <Image
-            style={{ width: 300, height: 170 }}
+            style={{ width: 250, height: 140, marginTop: 40}}
             source={{
               uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTj0IU2sjKXwBONkiU_-d4iAx14GLgZp5Mm7w&s,size=(826,465)",
             }}

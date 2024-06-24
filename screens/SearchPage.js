@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Platform, Modal } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
-import Categories from '../Categories'; 
 import CategoryProduct from '../components/CategoryProduct'; 
 import Products from '../data'; 
 import Header from "../components/header/Header"; 
@@ -10,10 +9,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AddressBottom from '../components/addressBottom/index'; 
 import axios from 'axios'; 
 
-const CategoryPage = ({ route }) => {
-  const { index } = route.params;
+const SearchPage = ({ route }) => {
+  const { query } = route.params;
   const [sortBy, setSortBy] = useState('rating-high');
-  const [products, setProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [maxPrice, setMaxPrice] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
   const [addresses, setAddresses] = useState([]);
@@ -23,67 +23,83 @@ const CategoryPage = ({ route }) => {
   });
   const [showFilters, setShowFilters] = useState(false);
   const [showSortByModal, setShowSortByModal] = useState(false);
-  const [error, setError] = useState(null); // State to hold error information
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const categoryProducts = Products.filter(product => product.category === Categories[index].name);
-    const maxPriceValue = Math.ceil(Math.max(...categoryProducts.map(product => product.price)) / 100) * 100;
+    setAllProducts(Products);
+    const maxPriceValue = Math.ceil(Math.max(...Products.map(product => product.price)) / 100) * 100;
     setMaxPrice(maxPriceValue);
     setFilters(prevFilters => ({ ...prevFilters, price: [0, maxPriceValue] }));
-    setProducts(categoryProducts);
-  }, [index]);
+  }, []);
 
   useEffect(() => {
-    applyFilters();
+    if (allProducts.length === 0) return;
+    
+    const newFilteredProducts = query
+      ? allProducts.filter((product) => {
+          const lowerCaseTitle = product.title?.toLowerCase();
+          clg(lowerCaseTitle)
+          const lowerCaseCategory = product.category?.toLowerCase();
+          const lowerCaseTags = product.tags?.map(tag => tag.toLowerCase());
+
+          return lowerCaseTitle?.includes(query.toLowerCase()) ||
+                 lowerCaseCategory?.includes(query.toLowerCase()) ||
+                 (lowerCaseTags && lowerCaseTags.some(tag => tag.includes(query.toLowerCase())));
+        })
+      : allProducts;
+
+    setFilteredProducts(newFilteredProducts);
+  }, [query, allProducts]);
+
+  useEffect(() => {
+    if (filteredProducts.length === 0) return;
+    applyFilters(filters);
   }, [filters, sortBy]);
 
   const handleDefaultAddressSelection = async (address) => {
     try {
-      // Example URL and payload for setting default address
       const url = 'https://example.com/api/setDefaultAddress';
       const payload = {
         addressId: address.id,
-        // Include other required fields if necessary
       };
 
       const response = await axios.post(url, payload);
       console.log('Default address set successfully:', response.data);
-      // Update state or perform other actions on success
     } catch (error) {
       console.error('Error setting default address:', error.message);
-      setError('Failed to set default address. Please try again.'); // Update error state
+      setError('Failed to set default address. Please try again.');
     }
   };
 
   const handleFilterChange = (filterType, value) => {
-    let newFilters = { ...filters };
-    if (filterType === 'discount') {
-      const updatedDiscounts = newFilters.discount.includes(value)
-        ? newFilters.discount.filter(discount => discount !== value)
-        : [...newFilters.discount, value];
-      newFilters.discount = updatedDiscounts;
-    } else if (filterType === 'price') {
-      newFilters.price = value;
-    }
-    setFilters(newFilters);
-    applyFilters(newFilters);
+    setFilters(prevFilters => {
+      let newFilters = { ...prevFilters };
+      if (filterType === 'discount') {
+        newFilters.discount = prevFilters.discount.includes(value)
+          ? prevFilters.discount.filter(discount => discount !== value)
+          : [...prevFilters.discount, value];
+      } else if (filterType === 'price') {
+        newFilters.price = value;
+      }
+      return newFilters;
+    });
   };
 
-  const applyFilters = (filtersToApply = filters) => {
-    let filteredProducts = Products.filter(product => product.category === Categories[index].name);
+  const applyFilters = (filtersToApply) => {
+    let newFilteredProducts = [...filteredProducts];
 
     if (filtersToApply.discount.length > 0) {
-      filteredProducts = filteredProducts.filter(product => {
+      newFilteredProducts = newFilteredProducts.filter(product => {
         const discountPercentage = getDiscountPercentage(product.price, product.mrp);
         return filtersToApply.discount.some(option => discountPercentage >= option);
       });
     }
 
-    filteredProducts = filteredProducts.filter(product => {
+    newFilteredProducts = newFilteredProducts.filter(product => {
       return product.price >= filtersToApply.price[0] && product.price <= filtersToApply.price[1];
     });
 
-    filteredProducts.sort((a, b) => {
+    newFilteredProducts.sort((a, b) => {
       switch (sortBy) {
         case 'rating-high':
           return b.rating - a.rating;
@@ -104,7 +120,7 @@ const CategoryPage = ({ route }) => {
       }
     });
 
-    setProducts(filteredProducts);
+    setFilteredProducts(newFilteredProducts);
   };
 
   const getDiscountPercentage = (price, mrp) => {
@@ -193,7 +209,7 @@ const CategoryPage = ({ route }) => {
         )}
 
         <View style={styles.productList}>
-          {products.map(product => (
+          {filteredProducts.map(product => (
             <View key={product.id} style={styles.categoryItems}>
               <CategoryProduct
                 item={product}
@@ -211,7 +227,7 @@ const CategoryPage = ({ route }) => {
     </View>
   );
 };
-// Mapping for displaying sort by labels
+
 const sortByLabelMapping = {
   'rating-high': 'Highest Rating',
   'price-high': 'Price High to Low',
@@ -221,100 +237,103 @@ const sortByLabelMapping = {
   'discount-high': 'Discount High to Low',
   'discount-low': 'Discount Low to High',
 };
+
 const styles = StyleSheet.create({
-  scrollContainer: {
-    flexGrow: 1,
-  },
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#fff',
   },
-  header: {
+  fixedHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 10,
-    marginBottom: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+    backgroundColor: '#fff',
   },
   sortByContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   sortByText: {
-    fontSize: 16,
-    fontWeight: 'bold',
     marginRight: 5,
+    fontSize: 16,
   },
   filtersButton: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   filterText: {
-    fontSize: 16,
-    fontWeight: 'bold',
     marginRight: 5,
+    fontSize: 16,
+  },
+  scrollContainer: {
+    flexGrow: 1,
   },
   modalContainer: {
     flex: 1,
     justifyContent: 'flex-end',
   },
   modalBackground: {
-    ...StyleSheet.absoluteFillObject,
+    flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
-    backgroundColor: 'white',
-    paddingVertical: 10,
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    paddingVertical: 20,
+    paddingHorizontal: 10,
   },
   picker: {
     width: '100%',
   },
   filterOptions: {
-    paddingHorizontal: 10,
-    marginBottom: 10,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
   },
   filterHeading: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 5,
+    marginBottom: 10,
   },
   checkboxContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginBottom: 10,
   },
   checkbox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: 10,
-    marginBottom: 5,
-    paddingVertical: 5,
+    backgroundColor: '#f0f0f0',
     paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
+    paddingVertical: 5,
+    borderRadius: 20,
+    marginHorizontal: 5,
+    marginVertical: 5,
   },
   checked: {
-    backgroundColor: 'blue',
-    borderColor: 'blue',
-  },
-  applyButton: {
-    backgroundColor: 'blue',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 10,
-    alignItems: 'center',
-  },
-  applyButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    backgroundColor: '#007bff',
   },
   productList: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
+    paddingTop: 10,
   },
   categoryItems: {
-    marginBottom: 10,
+    marginBottom: 20,
+  },
+  errorContainer: {
+    backgroundColor: '#f8d7da',
+    padding: 10,
+    margin: 10,
+    borderRadius: 5,
+  },
+  errorText: {
+    color: '#721c24',
+    fontSize: 14,
   },
 });
 
-export default CategoryPage;
+export default SearchPage;

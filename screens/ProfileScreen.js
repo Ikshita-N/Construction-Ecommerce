@@ -14,11 +14,11 @@ import { UserType } from "../UserContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getIpAddress } from '../IpAddressUtils';
 import Header2 from "../components/header/Header2";
+import reducer from "../reducer";
 
 const ProfileScreen = () => {
   const { userId, setUserId } = useContext(UserType);
-  console.log(userId)
-  console.log(1)
+  console.log(userId);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
@@ -91,9 +91,9 @@ const ProfileScreen = () => {
   }, []);
   
   return (
-    <ScrollView style={styles.container} >
-    <Header2/>
-      <Text style={styles.welcomeText}>Welcome {user?.name}</Text>
+    <ScrollView style={styles.container}>
+      <Header2 />
+      <Text style={styles.welcomeText}>Welcome {user?.displayName}!</Text>
   
       <View style={styles.buttonsContainer}>
         <Pressable style={styles.button}>
@@ -102,9 +102,6 @@ const ProfileScreen = () => {
         <Pressable style={styles.button}>
           <Text style={styles.buttonText}>Your Account</Text>
         </Pressable>
-      </View>
-  
-      <View style={styles.buttonsContainer}>
         <Pressable style={styles.button}>
           <Text style={styles.buttonText}>Buy Again</Text>
         </Pressable>
@@ -143,7 +140,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
-    marginTop: 55, flex: 1, backgroundColor: "white" 
+    marginTop: 55,
   },
   headerStyle: {
     backgroundColor: "#00CED1",
@@ -164,24 +161,30 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: 20,
     marginBottom: 10,
+    textAlign: "center",
   },
   buttonsContainer: {
     flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
     alignItems: "center",
-    gap: 10,
     marginTop: 12,
   },
   button: {
     padding: 10,
     backgroundColor: "#E0E0E0",
     borderRadius: 25,
-    flex: 1,
+    margin: 10,
+    width: '40%',
+    alignItems: "center",
   },
   buttonText: {
     textAlign: "center",
+    fontWeight: "bold",
   },
   ordersContainer: {
     marginTop: 20,
+    paddingLeft: 10,
   },
   orderItem: {
     padding: 15,

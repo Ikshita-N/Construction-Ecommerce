@@ -37,8 +37,13 @@ const Header = ({ setModalVisible, modalVisible }) => {
   }, []);
 
   const handleSearch = () => {
-    console.log("Searching for:", searchQuery);
-    Keyboard.dismiss();
+    
+    const trimmedSearchQuery = searchQuery.trim();
+    if (trimmedSearchQuery !== '') {
+      console.log(searchQuery)
+      console.log(132)
+      navigation.navigate('SearchResults', { searchQuery: trimmedSearchQuery });
+    }
   };
 
   const navigateToFavorites = () => {

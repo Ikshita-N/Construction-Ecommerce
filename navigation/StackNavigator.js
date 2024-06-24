@@ -19,6 +19,7 @@ import ConfirmationScreen from "../screens/ConfirmationScreen";
 import OrderScreen from "../screens/OrderScreen";
 import CategoryPage from "../screens/CategoryPage";
 import Favorites from "../screens/Favorites";
+import SearchPage from "../screens/SearchPage";
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -144,7 +145,11 @@ const StackNavigator = () => {
           component={Favorites}
           options={{ headerShown: false }}
         />
-
+        <Stack.Screen
+          name="SearchResults"
+          component={SearchPage}
+          options={{ headerShown: false }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
