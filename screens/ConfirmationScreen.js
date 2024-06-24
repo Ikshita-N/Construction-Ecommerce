@@ -88,7 +88,7 @@ const ConfirmationScreen = () => {
         shippingAddress: selectedAddress,
         paymentMethod: selectedOption,
       };
-
+      
       const response = await axios.post(
         `http://${ipAddress}:8000/orders`,
         orderData

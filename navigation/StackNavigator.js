@@ -21,6 +21,7 @@ import CategoryPage from "../screens/CategoryPage";
 import Favorites from "../screens/Favorites";
 import SearchPage from "../screens/SearchPage";
 import AccountDetails from "../screens/AccountDetails";
+import OrderHistory from "../screens/OrderHistory";
 
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -154,6 +155,11 @@ const StackNavigator = () => {
          <Stack.Screen
           name="AccountDetails"
           component={AccountDetails}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="OrderHistory"
+          component={OrderHistory}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

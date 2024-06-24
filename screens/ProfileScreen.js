@@ -8,7 +8,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getIpAddress } from '../IpAddressUtils';
 import Header2 from "../components/header/Header2";
 import initialState from "../reducer"; 
-import AccountDetails from "./AccountDetails"; // Import the AccountDetails screen here
 
 const ProfileScreen = () => {
   const { userId, setUserId } = useContext(UserType);
@@ -86,6 +85,10 @@ const ProfileScreen = () => {
   const navigateToAccountDetails = () => {
     navigation.navigate('AccountDetails');
   };
+  const navigateToOrderHistory = () => {
+    navigation.navigate('OrderHistory');
+  };
+
 
   return (
     <ScrollView style={styles.container}>
@@ -94,7 +97,7 @@ const ProfileScreen = () => {
   
       <View style={styles.buttonsContainer}>
         <Pressable style={styles.button}>
-          <Text style={styles.buttonText}>Your orders</Text>
+          <Text style={styles.buttonText} onPress={navigateToOrderHistory}>Your orders</Text>
         </Pressable>
         <Pressable style={styles.button} onPress={navigateToAccountDetails}>
           <Text style={styles.buttonText}>Your Account</Text>
