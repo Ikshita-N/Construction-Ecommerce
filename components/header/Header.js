@@ -40,8 +40,6 @@ const Header = ({ setModalVisible, modalVisible }) => {
     
     const trimmedSearchQuery = searchQuery.trim();
     if (trimmedSearchQuery !== '') {
-      console.log(searchQuery)
-      console.log(132)
       navigation.navigate('SearchResults', { searchQuery: trimmedSearchQuery });
     }
   };

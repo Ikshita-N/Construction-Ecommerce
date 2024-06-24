@@ -10,7 +10,8 @@ import AddressBottom from '../components/addressBottom/index';
 import axios from 'axios'; 
 
 const SearchPage = ({ route }) => {
-  const { query } = route.params;
+  const initialQuery = route.params?.searchQuery || ''; 
+  const [query, setQuery] = useState(initialQuery);  
   const [sortBy, setSortBy] = useState('rating-high');
   const [allProducts, setAllProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -33,28 +34,8 @@ const SearchPage = ({ route }) => {
   }, []);
 
   useEffect(() => {
-    if (allProducts.length === 0) return;
-    
-    const newFilteredProducts = query
-      ? allProducts.filter((product) => {
-          const lowerCaseTitle = product.title?.toLowerCase();
-          clg(lowerCaseTitle)
-          const lowerCaseCategory = product.category?.toLowerCase();
-          const lowerCaseTags = product.tags?.map(tag => tag.toLowerCase());
-
-          return lowerCaseTitle?.includes(query.toLowerCase()) ||
-                 lowerCaseCategory?.includes(query.toLowerCase()) ||
-                 (lowerCaseTags && lowerCaseTags.some(tag => tag.includes(query.toLowerCase())));
-        })
-      : allProducts;
-
-    setFilteredProducts(newFilteredProducts);
-  }, [query, allProducts]);
-
-  useEffect(() => {
-    if (filteredProducts.length === 0) return;
     applyFilters(filters);
-  }, [filters, sortBy]);
+  }, [query, allProducts, filters, sortBy]);
 
   const handleDefaultAddressSelection = async (address) => {
     try {
@@ -86,8 +67,23 @@ const SearchPage = ({ route }) => {
   };
 
   const applyFilters = (filtersToApply) => {
-    let newFilteredProducts = [...filteredProducts];
+    console.log('Applying filters:', filtersToApply);
+    let newFilteredProducts = [...allProducts];
 
+    // Apply search query filter
+    if (query) {
+      newFilteredProducts = newFilteredProducts.filter((product) => {
+        const lowerCaseTitle = product.title?.toLowerCase();
+        const lowerCaseCategory = product.category?.toLowerCase();
+        const lowerCaseTags = product.tags?.map(tag => tag.toLowerCase());
+
+        return lowerCaseTitle?.includes(query.toLowerCase()) ||
+               lowerCaseCategory?.includes(query.toLowerCase()) ||
+               (lowerCaseTags && lowerCaseTags.some(tag => tag.includes(query.toLowerCase())));
+      });
+    }
+
+    // Apply discount filter
     if (filtersToApply.discount.length > 0) {
       newFilteredProducts = newFilteredProducts.filter(product => {
         const discountPercentage = getDiscountPercentage(product.price, product.mrp);
@@ -95,10 +91,12 @@ const SearchPage = ({ route }) => {
       });
     }
 
+    // Apply price filter
     newFilteredProducts = newFilteredProducts.filter(product => {
       return product.price >= filtersToApply.price[0] && product.price <= filtersToApply.price[1];
     });
 
+    // Apply sorting
     newFilteredProducts.sort((a, b) => {
       switch (sortBy) {
         case 'rating-high':
@@ -120,6 +118,7 @@ const SearchPage = ({ route }) => {
       }
     });
 
+    console.log('Filtered products:', newFilteredProducts.length);
     setFilteredProducts(newFilteredProducts);
   };
 
@@ -205,6 +204,13 @@ const SearchPage = ({ route }) => {
                 </TouchableOpacity>
               ))}
             </View>
+            <Text style={styles.filterHeading}>Price Range</Text>
+            <View style={styles.priceRangeContainer}>
+              <Text>₹{filters.price[0]}</Text>
+              <Text>to</Text>
+              <Text>₹{filters.price[1]}</Text>
+            </View>
+            {/* Add a slider or input fields for price range selection here */}
           </View>
         )}
 
@@ -316,6 +322,12 @@ const styles = StyleSheet.create({
   },
   checked: {
     backgroundColor: '#007bff',
+  },
+  priceRangeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
   },
   productList: {
     paddingHorizontal: 20,

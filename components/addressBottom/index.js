@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View, Modal } from "react-native";
 import { BottomModal, ModalContent, SlideAnimation } from "react-native-modals";
 import { AntDesign, Entypo, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -7,9 +7,12 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getIpAddress } from "../../IpAddressUtils";
 
-const AddressBottom = ({ modalVisible, setModalVisible, addresses, onSelectDefaultAddress }) => {
+const AddressBottom = ({ modalVisible, setModalVisible, onSelectDefaultAddress }) => {
   const [defaultAddress, setDefaultAddress] = useState(null);
   const [selectedAddress, setSelectedAddress] = useState(null);
+  const [showAlert, setShowAlert] = useState(false); // State to control alert visibility
+  const [deliverOutsideClicked, setDeliverOutsideClicked] = useState(false); // State to track "Deliver outside India" click
+  const [revertColorTimeout, setRevertColorTimeout] = useState(null); // Timeout for reverting colors
   const navigation = useNavigation();
   const ipAddress = getIpAddress();
 
@@ -41,6 +44,29 @@ const AddressBottom = ({ modalVisible, setModalVisible, addresses, onSelectDefau
     setSelectedAddress(address);
     onSelectDefaultAddress(address); // Pass the selected default address to the parent component
   };
+
+  const handleDeliverOutsideIndia = () => {
+    setDeliverOutsideClicked(true);
+    setShowAlert(true);
+
+    // Automatically hide alert after 2 seconds and revert colors
+    const timeout = setTimeout(() => {
+      setShowAlert(false);
+      setDeliverOutsideClicked(false);
+    }, 2000);
+
+    // Set the timeout ID to state for cleanup
+    setRevertColorTimeout(timeout);
+  };
+
+  // Cleanup function to clear timeout on component unmount or state change
+  useEffect(() => {
+    return () => {
+      if (revertColorTimeout) {
+        clearTimeout(revertColorTimeout);
+      }
+    };
+  }, [revertColorTimeout]);
 
   return (
     <View>
@@ -110,20 +136,27 @@ const AddressBottom = ({ modalVisible, setModalVisible, addresses, onSelectDefau
           </ScrollView>
           <View style={styles.optionsContainer}>
             <View style={styles.optionRow}>
-              <Entypo name="location-pin" size={22} color="#0066b2" />
+              <Entypo name="location-pin" size={22} color="#0066b2"/>
               <Text style={styles.optionText}>Enter an Indian pincode</Text>
             </View>
-            <View style={styles.optionRow}>
-              <Ionicons name="locate-sharp" size={22} color="#0066b2" />
-              <Text style={styles.optionText}>Use My Current location</Text>
-            </View>
-            <View style={styles.optionRow}>
-              <AntDesign name="earth" size={22} color="#0066b2" />
-              <Text style={styles.optionText}>Deliver outside India</Text>
-            </View>
+            <Pressable onPress={handleDeliverOutsideIndia} style={styles.optionRow}>
+              <Ionicons name="locate-sharp" size={22} color={deliverOutsideClicked ? "red" : "#0066b2"} />
+              <Text style={[styles.optionText, { color: deliverOutsideClicked ? "red" : "#0066b2" }]}>
+                Deliver outside India
+              </Text>
+            </Pressable>
           </View>
         </ModalContent>
       </BottomModal>
+
+      {/* Alert Modal for "Currently not available" */}
+      <Modal visible={showAlert} transparent={true} animationType="fade">
+        <View style={styles.alertContainer}>
+          <View style={styles.alertBox}>
+            <Text style={styles.alertText}>Currently not available</Text>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -198,8 +231,25 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   optionText: {
-    color: "#0066b2",
     fontWeight: "400",
+    color: "#0066b2"
+  },
+  // Styles for Alert Modal
+  alertContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  alertBox: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+  },
+  alertText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });
 
