@@ -16,7 +16,8 @@ import { cleanCart } from "../redux/CartReducer";
 import { useNavigation } from "@react-navigation/native";
 import { getIpAddress } from "../IpAddressUtils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-// import RazorpayCheckout from "react-native-razorpay";
+  import { addOrder } from "../redux/OrderReducer";
+  // import RazorpayCheckout from "react-native-razorpay";
 
 const ConfirmationScreen = () => {
   const steps = [
@@ -59,51 +60,80 @@ const ConfirmationScreen = () => {
   const [selectedAddress, setSelectedAdress] = useState("");
   const [option, setOption] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
+    const [orders, setOrders] = useState([]);
+    useEffect(() => {
+    fetchAddresses();
+  }, []);
   const handlePlaceOrder = async () => {
     try {
-      const token = await AsyncStorage.getItem("authToken");
-        // Ensure userId is a valid ObjectId
-    // if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-    //   Alert.alert("Error", "Invalid user ID. Please try again.");
-    //   return;
-    // }
-    // console.log(cart[0].images)
-    const cart1 = []
-    // console.log(cart)
-    for (let i = 0; i<cart.length; ++i){
-      cart1.push({
-        name: cart[i].title,
-        quantity: cart[i].quantity,
-        price: cart[i].price,
-        image: cart[i].images[0]
-      })
-      // console.log(state.cart.cart)
-
-    }
-    // console.log(selectedOption)
       const orderData = {
-        token: token,
-        cartItems: cart1,
+        userId,
+        cartItems: cart,
         totalPrice: total,
         shippingAddress: selectedAddress,
         paymentMethod: selectedOption,
       };
-      
-      const response = await axios.post(
-        `http://${ipAddress}:8000/orders`,
-        orderData
-      );
-      if (response.status === 200) {
-        navigation.navigate("Order");
-        dispatch(cleanCart());
-        console.log("order created successfully", response.data);
-      } else {
-        console.log("error creating order", response.data);
-      }
+
+      // Mocking the order placement
+      const orders = await AsyncStorage.getItem("orders");
+      const parsedOrders = orders ? JSON.parse(orders) : [];
+      const newOrders = [...parsedOrders, orderData];
+      await AsyncStorage.setItem("orders", JSON.stringify(newOrders));
+      setOrders(newOrders);
+
+      dispatch(addOrder(orderData)); // Add order to Redux store
+      dispatch(cleanCart()); // Clean the cart after placing the order
+      navigation.navigate("Order");
+      console.log("Order created successfully", orderData);
     } catch (error) {
-      console.log("errror", error);
+      console.log("Error", error);
     }
   };
+  // const handlePlaceOrder = async () => {
+  //   try {
+  //     const token = await AsyncStorage.getItem("authToken");
+  //       // Ensure userId is a valid ObjectId
+  //   // if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+  //   //   Alert.alert("Error", "Invalid user ID. Please try again.");
+  //   //   return;
+  //   // }
+  //   // console.log(cart[0].images)
+  //   const cart1 = []
+  //   // console.log(cart)
+  //   for (let i = 0; i<cart.length; ++i){
+  //     cart1.push({
+  //       name: cart[i].title,
+  //       quantity: cart[i].quantity,
+  //       price: cart[i].price,
+  //       image: cart[i].images[0]
+  //     })
+  //     // console.log(state.cart.cart)
+
+  //   }
+  //   // console.log(selectedOption)
+  //     const orderData = {
+  //       token: token,
+  //       cartItems: cart1,
+  //       totalPrice: total,
+  //       shippingAddress: selectedAddress,
+  //       paymentMethod: selectedOption,
+  //     };
+      
+  //     const response = await axios.post(
+  //       `http://${ipAddress}:8000/orders`,
+  //       orderData
+  //     );
+  //     if (response.status === 200) {
+  //       navigation.navigate("Order");
+  //       dispatch(cleanCart());
+  //       console.log("order created successfully", response.data);
+  //     } else {
+  //       console.log("error creating order", response.data);
+  //     }
+  //   } catch (error) {
+  //     console.log("errror", error);
+  //   }
+  // };
   // const pay = async () => {
   //   try {
   //     const options = {
