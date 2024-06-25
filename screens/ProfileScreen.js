@@ -102,15 +102,12 @@ const ProfileScreen = () => {
         <Pressable style={styles.button} onPress={navigateToAccountDetails}>
           <Text style={styles.buttonText}>Your Account</Text>
         </Pressable>
-        <Pressable style={styles.button}>
-          <Text style={styles.buttonText}>Buy Again</Text>
-        </Pressable>
         <Pressable onPress={logout} style={styles.button}>
           <Text style={styles.buttonText}>Logout</Text>
         </Pressable>
       </View>
   
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.ordersContainer}>
+      {/* <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.ordersContainer}>
         {loading ? (
           <Text>Loading...</Text>
         ) : orders.length > 0 ? (
@@ -129,7 +126,7 @@ const ProfileScreen = () => {
         ) : (
           <Text>No orders found</Text>
         )}
-      </ScrollView>
+      </ScrollView> */}
     </ScrollView>
   );
 };

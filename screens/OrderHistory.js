@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -24,8 +24,8 @@ const OrderHistory = () => {
       <Text style={styles.orderTitle}>Order History</Text>
       {orders.length > 0 ? (
         orders.map((order, index) => (
-          <View key={index} style={styles.orderContainer}>
-            <Text style={styles.orderText}>Order #{index + 1}</Text>
+          <TouchableOpacity key={index} style={styles.orderContainer} activeOpacity={0.8}>
+            <Text style={[styles.orderText, styles.orderNumber]}>Order #{index + 1}</Text>
             <Text style={styles.orderText}>Total: ${order.totalPrice}</Text>
             <Text style={styles.orderText}>Address: {order.shippingAddress.street}</Text>
             <Text style={styles.orderText}>Payment Method: {order.paymentMethod}</Text>
@@ -37,7 +37,7 @@ const OrderHistory = () => {
                 <Text style={styles.cartItemText}>Price: ${item.price}</Text>
               </View>
             ))}
-          </View>
+          </TouchableOpacity>
         ))
       ) : (
         <Text style={styles.noOrdersText}>No orders found</Text>
@@ -51,41 +51,45 @@ export default OrderHistory;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF', // White background
+    backgroundColor: '#FFFFFF', 
     paddingHorizontal: 16,
-    paddingTop: 20,
+    paddingTop: 60,
   },
   orderTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
     marginBottom: 20,
-    color: '#333333', // Dark grey text
+    color: '#000000', // Black text
+    fontWeight: 'bold', // Bold font
     textAlign: 'center',
   },
   orderContainer: {
-    backgroundColor: '#F0F0F0', // Light grey background
+    backgroundColor: '#F0F0F0', 
     padding: 16,
     marginBottom: 20,
     borderRadius: 8,
     elevation: 3,
+    marginTop: 10, 
   },
   orderText: {
     fontSize: 16,
     marginBottom: 8,
-    color: '#333333', // Dark grey text
+    color: '#333333', 
+  },
+  orderNumber: {
+    textDecorationLine: 'underline', // Underline text
   },
   itemsTitle: {
     marginTop: 12,
     fontWeight: 'bold',
-    color: '#FFAD33', // Orange text
+    color: '#000000', // Black text
   },
   cartItem: {
     marginLeft: 20,
-    marginTop: 8,
+    marginTop: 1,
   },
   cartItemText: {
-    fontSize: 14,
-    color: '#666666', // Grey text
+    fontSize: 15,
+    color: '#666666', 
   },
   noOrdersText: {
     fontSize: 18,

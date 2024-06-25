@@ -60,7 +60,7 @@ const CartScreen = () => {
       <Pressable
         onPress={() => navigation.navigate("Confirm")}
         style={{
-          backgroundColor: "#FFC72C",
+          backgroundColor: "#FFAD33",
           padding: 10,
           borderRadius: 5,
           justifyContent: "center",

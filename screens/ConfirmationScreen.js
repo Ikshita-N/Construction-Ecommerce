@@ -29,10 +29,9 @@ const ConfirmationScreen = () => {
   const navigation = useNavigation();
   const [currentStep, setCurrentStep] = useState(0);
   const [addresses, setAddresses] = useState([]);
-  const [defaultAddress, setdefaultAddress] = useState(null); // Default address state
+  const [defaultAddress, setdefaultAddress] = useState(null); 
   const ipAddress = getIpAddress();
   const { userId, setUserId } = useContext(UserType);
-  // console.log(userId)
   const cart = useSelector((state) => state.cart.cart);
   const total = cart
     ?.map((item) => item.price * item.quantity)
@@ -74,15 +73,15 @@ const ConfirmationScreen = () => {
         paymentMethod: selectedOption,
       };
 
-      // Mocking the order placement
+    
       const orders = await AsyncStorage.getItem("orders");
       const parsedOrders = orders ? JSON.parse(orders) : [];
       const newOrders = [...parsedOrders, orderData];
       await AsyncStorage.setItem("orders", JSON.stringify(newOrders));
       setOrders(newOrders);
 
-      dispatch(addOrder(orderData)); // Add order to Redux store
-      dispatch(cleanCart()); // Clean the cart after placing the order
+      dispatch(addOrder(orderData)); 
+      dispatch(cleanCart());
       navigation.navigate("Order");
       console.log("Order created successfully", orderData);
     } catch (error) {
@@ -134,49 +133,49 @@ const ConfirmationScreen = () => {
   //     console.log("errror", error);
   //   }
   // };
-  // const pay = async () => {
-  //   try {
-  //     const options = {
-  //       description: "Adding To Wallet",
-  //       currency: "INR",
-  //       name: "Amazon",
-  //       key: "rzp_test_E3GWYimxN7YMk8",
-  //       amount: total * 100,
-  //       prefill: {
-  //         email: "void@razorpay.com",
-  //         contact: "9191919191",
-  //         name: "RazorPay Software",
-  //       },
-  //       theme: { color: "#F37254" },
-  //     };
+  const pay = async () => {
+    try {
+      const options = {
+        description: "Adding To Wallet",
+        currency: "INR",
+        name: "Construction Eccomerce",
+        key: "rzp_test_E3GWYimxN7YMk8",
+        amount: total * 100,
+        prefill: {
+          email: "void@razorpay.com",
+          contact: "91919189191",
+          name: "RazorPay Software",
+        },
+        theme: { color: "#F37254" },
+      };
 
-  //     //   const data = await RazorpayCheckout.open(options);
+        const data = await RazorpayCheckout.open(options);
 
-  //     console.log(data);
+      console.log(data);
 
-  //     const orderData = {
-  //       userId: userId,
-  //       cartItems: cart,
-  //       totalPrice: total,
-  //       shippingAddress: selectedAddress,
-  //       paymentMethod: "card",
-  //     };
+      const orderData = {
+        userId: userId,
+        cartItems: cart,
+        totalPrice: total,
+        shippingAddress: selectedAddress,
+        paymentMethod: "card",
+      };
 
-  //     const response = await axios.post(
-  //       `http://${ipAddress}:8000/orders`,
-  //       orderData
-  //     );
-  //     if (response.status === 200) {
-  //       navigation.navigate("Order");
-  //       dispatch(cleanCart());
-  //       console.log("order created successfully", response.data);
-  //     } else {
-  //       console.log("error creating order", response.data);
-  //     }
-  //   } catch (error) {
-  //     console.log("error", error);
-  //   }
-  // };
+      const response = await axios.post(
+        `http://${ipAddress}:8000/orders`,
+        orderData
+      );
+      if (response.status === 200) {
+        navigation.navigate("Order");
+        dispatch(cleanCart());
+        console.log("order created successfully", response.data);
+      } else {
+        console.log("error creating order", response.data);
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
   return (
     <ScrollView style={{ marginTop: 55 }}>
       <View style={{ flex: 1, paddingHorizontal: 20, paddingTop: 40 }}>
@@ -352,17 +351,17 @@ const ConfirmationScreen = () => {
             )}
 
             <Text style={{ flex: 1 }}>
-              <Text style={{ color: "green", fontWeight: "500" }}>
+              <Text style={{ color: "#FFAD33", fontWeight: "500" }}>
                 Tomorrow by 10pm
               </Text>{" "}
-              - FREE delivery with your Prime membership
+              - FREE delivery with your membership
             </Text>
           </View>
 
           <Pressable
             onPress={() => setCurrentStep(2)}
             style={{
-              backgroundColor: "#FFC72C",
+              backgroundColor: "#FFAD33",
               padding: 10,
               borderRadius: 20,
               justifyContent: "center",
@@ -447,7 +446,7 @@ const ConfirmationScreen = () => {
           <Pressable
             onPress={() => setCurrentStep(3)}
             style={{
-              backgroundColor: "#FFC72C",
+              backgroundColor: "#FFAD33",
               padding: 10,
               borderRadius: 20,
               justifyContent: "center",
@@ -573,7 +572,7 @@ const ConfirmationScreen = () => {
           <Pressable
             onPress={handlePlaceOrder}
             style={{
-              backgroundColor: "#FFC72C",
+              backgroundColor: "#FFAD33",
               padding: 10,
               borderRadius: 20,
               justifyContent: "center",
