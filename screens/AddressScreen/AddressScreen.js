@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useContext } from "react";
+// AddressScreen.js
+import React, { useContext, useState } from "react";
 import {
-  StyleSheet,
   Text,
   View,
   ScrollView,
@@ -9,10 +9,11 @@ import {
   Alert,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { UserType } from "../UserContext";
+import { UserType } from "../../UserContext";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
-import { getIpAddress } from "../IpAddressUtils";
+import { getIpAddress } from "../../IpAddressUtils";
+import { styles } from "./AddressScreenStyles";
 
 const AddressScreen = () => {
   const navigation = useNavigation();
@@ -87,17 +88,13 @@ const AddressScreen = () => {
 
   return (
     <ScrollView style={{ marginTop: 50 }}>
-      <View style={{ height: 50, backgroundColor: "#FFAD33" }} />
+      <View style={styles.header} />
 
-      <View style={{ padding: 10 }}>
-        <Text style={{ fontSize: 17, fontWeight: "bold" }}>
-          Add a new Address
-        </Text>
+      <View style={styles.container}>
+        <Text style={styles.title}>Add a new Address</Text>
 
-        <View style={{ marginVertical: 10 }}>
-          <Text style={{ fontSize: 15, fontWeight: "bold" }}>
-            Full name (First and last name)
-          </Text>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Full name (First and last name)</Text>
           <TextInput
             value={name}
             onChangeText={(text) => setName(text)}
@@ -107,10 +104,8 @@ const AddressScreen = () => {
           />
         </View>
 
-        <View style={{ marginVertical: 10 }}>
-          <Text style={{ fontSize: 15, fontWeight: "bold" }}>
-            Mobile Number
-          </Text>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Mobile Number</Text>
           <TextInput
             value={mobileNo}
             onChangeText={(text) => {
@@ -126,12 +121,12 @@ const AddressScreen = () => {
             keyboardType="numeric"
           />
           {mobileError ? (
-            <Text style={{ color: "red" }}>{mobileError}</Text>
+            <Text style={styles.error}>{mobileError}</Text>
           ) : null}
         </View>
 
-        <View style={{ marginVertical: 10 }}>
-          <Text style={{ fontSize: 15, fontWeight: "bold" }}>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>
             Flat, House No, Building, Company
           </Text>
           <TextInput
@@ -143,10 +138,8 @@ const AddressScreen = () => {
           />
         </View>
 
-        <View style={{ marginVertical: 10 }}>
-          <Text style={{ fontSize: 15, fontWeight: "bold" }}>
-            Area, Street, Sector, Village
-          </Text>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Area, Street, Sector, Village</Text>
           <TextInput
             value={street}
             onChangeText={(text) => setStreet(text)}
@@ -156,8 +149,8 @@ const AddressScreen = () => {
           />
         </View>
 
-        <View style={{ marginVertical: 10 }}>
-          <Text style={{ fontSize: 15, fontWeight: "bold" }}>Landmark</Text>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Landmark</Text>
           <TextInput
             value={landmark}
             onChangeText={(text) => setLandmark(text)}
@@ -167,8 +160,8 @@ const AddressScreen = () => {
           />
         </View>
 
-        <View style={{ marginVertical: 10 }}>
-          <Text style={{ fontSize: 15, fontWeight: "bold" }}>Pincode</Text>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Pincode</Text>
           <TextInput
             value={postalCode}
             onChangeText={(text) => {
@@ -184,36 +177,16 @@ const AddressScreen = () => {
             keyboardType="numeric"
           />
           {pincodeError ? (
-            <Text style={{ color: "red" }}>{pincodeError}</Text>
+            <Text style={styles.error}>{pincodeError}</Text>
           ) : null}
         </View>
 
-        <Pressable
-          onPress={handleAddAddress}
-          style={{
-            backgroundColor: "#FFAD33",
-            padding: 19,
-            borderRadius: 6,
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: 20,
-          }}
-        >
-          <Text style={{ fontWeight: "bold" }}>Add Address</Text>
+        <Pressable onPress={handleAddAddress} style={styles.addButton}>
+          <Text style={styles.buttonText}>Add Address</Text>
         </Pressable>
       </View>
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  input: {
-    padding: 10,
-    borderColor: "#D0D0D0",
-    borderWidth: 1,
-    marginTop: 10,
-    borderRadius: 5,
-  },
-});
 
 export default AddressScreen;

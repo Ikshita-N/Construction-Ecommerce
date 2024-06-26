@@ -12,7 +12,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { getIpAddress } from "../../IpAddressUtils";
 import { useNavigation } from "@react-navigation/native";
-import Favorites from "../../screens/Favorites";
+import Favorites from "../../screens/Favorites/Favorites";
 
 const Header = ({ setModalVisible, modalVisible }) => {
   const [defaultAddress, setDefaultAddress] = useState(null);
@@ -37,15 +37,14 @@ const Header = ({ setModalVisible, modalVisible }) => {
   }, []);
 
   const handleSearch = () => {
-    
     const trimmedSearchQuery = searchQuery.trim();
-    if (trimmedSearchQuery !== '') {
-      navigation.navigate('SearchResults', { searchQuery: trimmedSearchQuery });
+    if (trimmedSearchQuery !== "") {
+      navigation.navigate("SearchResults", { searchQuery: trimmedSearchQuery });
     }
   };
 
   const navigateToFavorites = () => {
-    navigation.navigate("Fav"); 
+    navigation.navigate("Fav");
   };
 
   return (
@@ -66,7 +65,10 @@ const Header = ({ setModalVisible, modalVisible }) => {
             style={styles.searchInput}
           />
         </Pressable>
-        <Pressable onPress={navigateToFavorites} style={styles.favoriteContainer}>
+        <Pressable
+          onPress={navigateToFavorites}
+          style={styles.favoriteContainer}
+        >
           <AntDesign
             style={styles.favoriteIcon}
             name="hearto"

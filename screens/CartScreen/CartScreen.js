@@ -3,10 +3,11 @@ import { StyleSheet, Text, View, ScrollView, Pressable, Image } from "react-nati
 import { Feather } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
-import { decrementQuantity, incrementQuantity, removeFromCart } from "../redux/CartReducer";
+import { decrementQuantity, incrementQuantity, removeFromCart } from "../../redux/CartReducer";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import Header2 from "../components/header/Header2";
-import { addToFavorites, removeFromFavorites } from "../redux/FavReducer";
+import Header2 from "../../components/header/Header2";
+import { addToFavorites, removeFromFavorites } from "../../redux/FavReducer";
+import { cartStyles } from "./CartScreenStyles";
 
 const CartScreen = () => {
   const cart = useSelector((state) => state.cart.cart);
@@ -50,23 +51,22 @@ const CartScreen = () => {
   if (cart.length === 0) {
     return (
       <ScrollView style={{ marginTop: 55, flex: 1, backgroundColor: "white" }}>
-      <Header2 />
-      
-      
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "white" }}>
-      
-        <Image
-          style={{ width: 250, height: 250, resizeMode: "contain" }}
-          source={require("./images/emptycart.png")}
-        />
-        <Text style={{ fontSize: 20, fontWeight: "bold", marginTop: 20 }}>
-          Your cart is empty!
-        </Text>
-        <Text style={{ fontSize: 16, marginTop: 10 }}>
-          Add some items to continue shopping.
-        </Text>
-        
-      </View>
+        <Header2 />
+
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "white" }}>
+
+          <Image
+            style={{ width: 250, height: 250, resizeMode: "contain" }}
+            source={require("./emptycart.png")}
+          />
+          <Text style={{ fontSize: 20, fontWeight: "bold", marginTop: 20 }}>
+            Your cart is empty!
+          </Text>
+          <Text style={{ fontSize: 16, marginTop: 10 }}>
+            Add some items to continue shopping.
+          </Text>
+
+        </View>
       </ScrollView>
     );
   }
@@ -80,7 +80,7 @@ const CartScreen = () => {
         <Text style={{ fontSize: 20, fontWeight: "bold" }}>{total}</Text>
       </View>
       {/* <Text style={{ marginHorizontal: 10 }}>EMI details Available</Text> */}
- 
+
       <Pressable
         onPress={() => navigation.navigate("Confirm")}
         style={{
@@ -142,7 +142,7 @@ const CartScreen = () => {
                 >
                   {item?.price}
                 </Text>
-               
+
                 <Text style={{ color: "green" }}>In Stock</Text>
                 {/* <Text style={{ fontWeight: "500", marginTop: 6 }}>
                     {item?.rating?.rate} ratings
@@ -240,15 +240,7 @@ const CartScreen = () => {
               }}
             >
               <Pressable
-                style={{
-                  backgroundColor: "white",
-                  paddingHorizontal: 8,
-                  paddingVertical: 10,
-                  borderRadius: 5,
-                  borderColor: "#C0C0C0",
-                  borderWidth: 0.6,
-                  marginStart: 25
-                }}
+                style={[cartStyles.addToFavoritesButton, { backgroundColor: itemInFav(item) ? '#F0F0F0' : 'white' }]}
                 onPress={() => favButton(item)}
               >
                 <Text>{!itemInFav(item) ? 'Add to Favorites' : 'Added to Favorites'}</Text>
@@ -262,30 +254,3 @@ const CartScreen = () => {
 };
 
 export default CartScreen;
-
-const styles = StyleSheet.create({
-  searchBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    backgroundColor: "white",
-    borderRadius: 3,
-    height: 38,
-    flex: 1,
-    paddingHorizontal: 10,
-  },
-  searchIcon: {
-    paddingLeft: 10,
-  },
-  searchInput: {
-    flex: 1,
-    paddingVertical: 8,
-    fontSize: 16,
-  },
-  favoriteContainer: {
-    padding: 5,
-  },
-  favoriteIcon: {
-    paddingRight: 1,
-  },
-});

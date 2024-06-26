@@ -1,17 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Platform, Modal } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Platform,
+  Modal,
+} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
-import CategoryProduct from '../components/CategoryProduct'; 
-import Products from '../data'; 
-import Header from "../components/header/Header"; 
+import CategoryProduct from '../../components/CategoryProduct';
+import Products from '../../data';
+import Header from "../../components/header/Header";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import AddressBottom from '../components/addressBottom/index'; 
-import axios from 'axios'; 
+import AddressBottom from '../../components/addressBottom/index';
+import axios from 'axios';
+import { styles } from './SearchPageStyles'; 
 
 const SearchPage = ({ route }) => {
-  const initialQuery = route.params?.searchQuery || ''; 
-  const [query, setQuery] = useState(initialQuery);  
+  const initialQuery = route.params?.searchQuery || '';
+  const [query, setQuery] = useState(initialQuery);
   const [sortBy, setSortBy] = useState('rating-high');
   const [allProducts, setAllProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -20,7 +29,7 @@ const SearchPage = ({ route }) => {
   const [addresses, setAddresses] = useState([]);
   const [filters, setFilters] = useState({
     discount: [],
-    price: [0, 0]
+    price: [0, 0],
   });
   const [showFilters, setShowFilters] = useState(false);
   const [showSortByModal, setShowSortByModal] = useState(false);
@@ -28,7 +37,9 @@ const SearchPage = ({ route }) => {
 
   useEffect(() => {
     setAllProducts(Products);
-    const maxPriceValue = Math.ceil(Math.max(...Products.map(product => product.price)) / 100) * 100;
+    const maxPriceValue = Math.ceil(
+      Math.max(...Products.map(product => product.price)) / 100
+    ) * 100;
     setMaxPrice(maxPriceValue);
     setFilters(prevFilters => ({ ...prevFilters, price: [0, maxPriceValue] }));
   }, []);
@@ -37,7 +48,7 @@ const SearchPage = ({ route }) => {
     applyFilters(filters);
   }, [query, allProducts, filters, sortBy]);
 
-  const handleDefaultAddressSelection = async (address) => {
+  const handleDefaultAddressSelection = async address => {
     try {
       const url = 'https://example.com/api/setDefaultAddress';
       const payload = {
@@ -66,34 +77,45 @@ const SearchPage = ({ route }) => {
     });
   };
 
-  const applyFilters = (filtersToApply) => {
+  const applyFilters = filtersToApply => {
     console.log('Applying filters:', filtersToApply);
     let newFilteredProducts = [...allProducts];
 
     // Apply search query filter
     if (query) {
-      newFilteredProducts = newFilteredProducts.filter((product) => {
+      newFilteredProducts = newFilteredProducts.filter(product => {
         const lowerCaseTitle = product.title?.toLowerCase();
         const lowerCaseCategory = product.category?.toLowerCase();
         const lowerCaseTags = product.tags?.map(tag => tag.toLowerCase());
 
-        return lowerCaseTitle?.includes(query.toLowerCase()) ||
-               lowerCaseCategory?.includes(query.toLowerCase()) ||
-               (lowerCaseTags && lowerCaseTags.some(tag => tag.includes(query.toLowerCase())));
+        return (
+          lowerCaseTitle?.includes(query.toLowerCase()) ||
+          lowerCaseCategory?.includes(query.toLowerCase()) ||
+          (lowerCaseTags &&
+            lowerCaseTags.some(tag => tag.includes(query.toLowerCase())))
+        );
       });
     }
 
     // Apply discount filter
     if (filtersToApply.discount.length > 0) {
       newFilteredProducts = newFilteredProducts.filter(product => {
-        const discountPercentage = getDiscountPercentage(product.price, product.mrp);
-        return filtersToApply.discount.some(option => discountPercentage >= option);
+        const discountPercentage = getDiscountPercentage(
+          product.price,
+          product.mrp
+        );
+        return filtersToApply.discount.some(
+          option => discountPercentage >= option
+        );
       });
     }
 
     // Apply price filter
     newFilteredProducts = newFilteredProducts.filter(product => {
-      return product.price >= filtersToApply.price[0] && product.price <= filtersToApply.price[1];
+      return (
+        product.price >= filtersToApply.price[0] &&
+        product.price <= filtersToApply.price[1]
+      );
     });
 
     // Apply sorting
@@ -110,9 +132,11 @@ const SearchPage = ({ route }) => {
         case 'least-reviews':
           return a.reviews.length - b.reviews.length;
         case 'discount-high':
-          return getDiscountPercentage(b.price, b.mrp) - getDiscountPercentage(a.price, a.mrp);
+          return getDiscountPercentage(b.price, b.mrp) -
+            getDiscountPercentage(a.price, a.mrp);
         case 'discount-low':
-          return getDiscountPercentage(a.price, a.mrp) - getDiscountPercentage(b.price, b.mrp);
+          return getDiscountPercentage(a.price, a.mrp) -
+            getDiscountPercentage(b.price, b.mrp);
         default:
           return 0;
       }
@@ -139,12 +163,17 @@ const SearchPage = ({ route }) => {
     <View style={styles.container}>
       <SafeAreaView
         style={{
-          paddingTop: Platform.OS === "android" ? 40 : 0,
-          backgroundColor: "white",
+          paddingTop: Platform.OS === 'android' ? 40 : 0,
+          backgroundColor: 'white',
         }}
       >
-        <Header setModalVisible={setModalVisible} modalVisible={modalVisible}  />
-        <AddressBottom setModalVisible={setModalVisible} modalVisible={modalVisible} addresses={addresses} onSelectDefaultAddress={handleDefaultAddressSelection}/>
+        <Header setModalVisible={setModalVisible} modalVisible={modalVisible} />
+        <AddressBottom
+          setModalVisible={setModalVisible}
+          modalVisible={modalVisible}
+          addresses={addresses}
+          onSelectDefaultAddress={handleDefaultAddressSelection}
+        />
       </SafeAreaView>
 
       <View style={styles.fixedHeader}>
@@ -173,7 +202,7 @@ const SearchPage = ({ route }) => {
               <Picker
                 style={styles.picker}
                 selectedValue={sortBy}
-                onValueChange={(itemValue) => {
+                onValueChange={itemValue => {
                   setSortBy(itemValue);
                   toggleSortByModal();
                 }}
@@ -198,7 +227,10 @@ const SearchPage = ({ route }) => {
                 <TouchableOpacity
                   key={option}
                   onPress={() => handleFilterChange('discount', option)}
-                  style={[styles.checkbox, filters.discount.includes(option) && styles.checked]}
+                  style={[
+                    styles.checkbox,
+                    filters.discount.includes(option) && styles.checked,
+                  ]}
                 >
                   <Text>{option}% or more</Text>
                 </TouchableOpacity>
@@ -217,9 +249,7 @@ const SearchPage = ({ route }) => {
         <View style={styles.productList}>
           {filteredProducts.map(product => (
             <View key={product.id} style={styles.categoryItems}>
-              <CategoryProduct
-                item={product}
-              />
+              <CategoryProduct item={product} />
             </View>
           ))}
         </View>
@@ -233,7 +263,6 @@ const SearchPage = ({ route }) => {
     </View>
   );
 };
-
 const sortByLabelMapping = {
   'rating-high': 'Highest Rating',
   'price-high': 'Price High to Low',
@@ -243,109 +272,5 @@ const sortByLabelMapping = {
   'discount-high': 'Discount High to Low',
   'discount-low': 'Discount Low to High',
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  fixedHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-    backgroundColor: '#fff',
-  },
-  sortByContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  sortByText: {
-    marginRight: 5,
-    fontSize: 16,
-  },
-  filtersButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  filterText: {
-    marginRight: 5,
-    fontSize: 16,
-  },
-  scrollContainer: {
-    flexGrow: 1,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  modalBackground: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-    paddingVertical: 20,
-    paddingHorizontal: 10,
-  },
-  picker: {
-    width: '100%',
-  },
-  filterOptions: {
-    paddingHorizontal: 20,
-    paddingTop: 10,
-    paddingBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-  },
-  filterHeading: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  checkboxContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  checkbox: {
-    backgroundColor: '#f0f0f0',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 20,
-    marginHorizontal: 5,
-    marginVertical: 5,
-  },
-  checked: {
-    backgroundColor: '#007bff',
-  },
-  priceRangeContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  productList: {
-    paddingHorizontal: 20,
-    paddingTop: 10,
-  },
-  categoryItems: {
-    marginBottom: 20,
-  },
-  errorContainer: {
-    backgroundColor: '#f8d7da',
-    padding: 10,
-    margin: 10,
-    borderRadius: 5,
-  },
-  errorText: {
-    color: '#721c24',
-    fontSize: 14,
-  },
-});
 
 export default SearchPage;
