@@ -58,8 +58,8 @@ const styles = StyleSheet.create({
   orderTitle: {
     fontSize: 24,
     marginBottom: 20,
-    color: '#000000', // Black text
-    fontWeight: 'bold', // Bold font
+    color: '#000000', 
+    fontWeight: 'bold',
     textAlign: 'center',
   },
   orderContainer: {
@@ -76,12 +76,12 @@ const styles = StyleSheet.create({
     color: '#333333', 
   },
   orderNumber: {
-    textDecorationLine: 'underline', // Underline text
+    textDecorationLine: 'underline', 
   },
   itemsTitle: {
     marginTop: 12,
     fontWeight: 'bold',
-    color: '#000000', // Black text
+    color: '#000000', 
   },
   cartItem: {
     marginLeft: 20,
@@ -95,6 +95,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     marginTop: 40,
-    color: '#333333', // Dark grey text
+    color: '#333333', 
   },
 });

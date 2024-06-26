@@ -47,16 +47,34 @@ const CartScreen = () => {
     dispatch(removeFromCart(item));
   };
 
+  if (cart.length === 0) {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "white" }}>
+        <Image
+          style={{ width: 200, height: 200, resizeMode: "contain" }}
+          source={require("./images/emptycart.png")}
+        />
+        <Text style={{ fontSize: 20, fontWeight: "bold", marginTop: 20 }}>
+          Your cart is empty!
+        </Text>
+        <Text style={{ fontSize: 16, marginTop: 10 }}>
+          Add some items to continue shopping.
+        </Text>
+      </View>
+    );
+  }
+
+
   return (
     <ScrollView style={{ marginTop: 55, flex: 1, backgroundColor: "white" }}>
       <Header2 />
 
       <View style={{ padding: 10, flexDirection: "row", alignItems: "center" }}>
-        <Text style={{ fontSize: 18, fontWeight: "400" }}>Subtotal : </Text>
+        <Text style={{ fontSize: 18, fontWeight: "400" }}>Total : </Text>
         <Text style={{ fontSize: 20, fontWeight: "bold" }}>{total}</Text>
       </View>
-      <Text style={{ marginHorizontal: 10 }}>EMI details Available</Text>
-
+      {/* <Text style={{ marginHorizontal: 10 }}>EMI details Available</Text> */}
+ 
       <Pressable
         onPress={() => navigation.navigate("Confirm")}
         style={{

@@ -179,7 +179,6 @@ app.post("/addresses/set-default", async (req, res) => {
   }
 });
 
-//endpoint to store all the orders
 app.post("/orders", async (req, res) => {
   try {
     // const { token, cartItems, totalPrice, shippingAddress, paymentMethod } =
