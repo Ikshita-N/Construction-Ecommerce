@@ -49,9 +49,14 @@ const CartScreen = () => {
 
   if (cart.length === 0) {
     return (
+      <ScrollView style={{ marginTop: 55, flex: 1, backgroundColor: "white" }}>
+      <Header2 />
+      
+      
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "white" }}>
+      
         <Image
-          style={{ width: 200, height: 200, resizeMode: "contain" }}
+          style={{ width: 250, height: 250, resizeMode: "contain" }}
           source={require("./images/emptycart.png")}
         />
         <Text style={{ fontSize: 20, fontWeight: "bold", marginTop: 20 }}>
@@ -60,10 +65,11 @@ const CartScreen = () => {
         <Text style={{ fontSize: 16, marginTop: 10 }}>
           Add some items to continue shopping.
         </Text>
+        
       </View>
+      </ScrollView>
     );
   }
-
 
   return (
     <ScrollView style={{ marginTop: 55, flex: 1, backgroundColor: "white" }}>

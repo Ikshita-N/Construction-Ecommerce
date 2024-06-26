@@ -2,8 +2,8 @@ import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import LoginScreen from "../screens/LoginScreen";
-import RegisterScreen from "../screens/RegisterScreen";
+import LoginScreen from "../screens/LoginScreen/LoginScreen";
+import RegisterScreen from "../screens/RegisterScreen/RegisterScreen";
 import HomeScreen from "../screens/HomeScreen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Entypo } from "@expo/vector-icons";
@@ -68,8 +68,6 @@ const StackNavigator = () => {
               ),
           }}
         />
-
-          
 
         <Tab.Screen
           name="Cart"
@@ -152,7 +150,7 @@ const StackNavigator = () => {
           component={SearchPage}
           options={{ headerShown: false }}
         />
-         <Stack.Screen
+        <Stack.Screen
           name="AccountDetails"
           component={AccountDetails}
           options={{ headerShown: false }}

@@ -1,15 +1,11 @@
-import React, { useState } from "react";
-import { View, FlatList, StyleSheet, Text, TextInput, Pressable, ScrollView } from "react-native";
+import React from "react";
+import { View, FlatList, StyleSheet, Text, ScrollView, Image } from "react-native";
 import { useSelector } from "react-redux";
 import CategoryProduct from "../components/CategoryProduct";
-import { AntDesign, Feather } from "@expo/vector-icons";
 import Header2 from "../components/header/Header2";
 
 const Favorites = () => {
   const favorites = useSelector((state) => state.favorites.favorites);
-  const navigateToFavorites = () => {
-    navigation.navigate("Fav"); 
-  };
 
   return (
     <ScrollView
@@ -20,48 +16,33 @@ const Favorites = () => {
       }}
       showsVerticalScrollIndicator={false}
     >
-    <Header2 />
-      
-        <Text style={styles.heading}>Favorites</Text>
-        {favorites.length === 0 ? (
-          <Text style={styles.emptyText}>No favorites added yet.</Text>
-        ) : (
-          <FlatList
-            data={favorites}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => <CategoryProduct item={item} isFavorite={true} />}
-            contentContainerStyle={styles.list}
+      <Header2 />
+
+      <Text style={styles.heading}>Favorites</Text>
+
+      {favorites.length === 0 ? (
+        <View style={styles.emptyContainer}>
+          <Image
+            style={styles.emptyImage}
+            source={require("./images/empty.png")}
           />
-        )}
-     
+          <Text style={styles.emptyText}>Your favorite list is looking a bit lonely.</Text>
+          <Text style={styles.emptySubtext}>Add some items to fill it up!</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={favorites}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => <CategoryProduct item={item} isFavorite={true} />}
+          contentContainerStyle={styles.list}
+        />
+      )}
+
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
-  header: {
-    backgroundColor: "#FFAD33",
-    padding: 10,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  searchBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginHorizontal: 7,
-    gap: 10,
-    backgroundColor: "white",
-    borderRadius: 3,
-    height: 38,
-    flex: 1,
-  },
-  searchIcon: {
-    paddingLeft: 10,
-  },
   heading: {
     fontSize: 24,
     fontWeight: "bold",
@@ -69,32 +50,30 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     color: "black",
   },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyImage: {
+    width: 250,
+    height: 250,
+    resizeMode: "contain",
+    marginBottom: 20,
+  },
   emptyText: {
     textAlign: "center",
-    marginTop: 20,
     fontSize: 18,
     color: "#888",
   },
+  emptySubtext: {
+    textAlign: "center",
+    fontSize: 16,
+    color: "#888",
+    marginTop: 10,
+  },
   list: {
     paddingHorizontal: 10,
-  },
-  searchInput: {
-    flex: 1,
-    paddingVertical: 8, // Adjust input padding
-    fontSize: 16, // Adjust input font size
-  },
-  favoriteContainer: {
-    padding: 5, // Adjust padding around the heart icon
-  },
-  favoriteIcon: {
-    paddingRight: 1,
-  },
-  locationBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-    padding: 10,
-    backgroundColor: "#FAC369",
   },
 });
 
